@@ -1605,46 +1605,6 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                     padding: EdgeInsetsDirectional.only(start: 9.0),
                     child: InkWell(
                       child: Column(
-                        children: [
-                          Image.asset(
-                            "assets/images/s_share.png",
-                            height: 26.0,
-                            width: 26.0,
-                          ),
-                          Padding(
-                              padding: EdgeInsetsDirectional.only(top: 4.0),
-                              child: Text(
-                                getTranslated(context, 'share_lbl')!,
-                                style: Theme.of(this.context)
-                                    .textTheme
-                                    .caption
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .fontColor
-                                            .withOpacity(0.8),
-                                        fontSize: 9.0),
-                              ))
-                        ],
-                      ),
-                      onTap: () async {
-                        _isNetworkAvail = await isNetworkAvailable();
-                        if (_isNetworkAvail) {
-                          createDynamicLink(
-                            widget.model!.id!,
-                            widget.index!,
-                            widget.model!.title!,
-                          );
-                        } else {
-                          setSnackbar(getTranslated(context, 'internetmsg')!);
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(start: 9.0),
-                    child: InkWell(
-                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Image.asset(
@@ -1675,6 +1635,48 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                       },
                     ),
                   ),
+                  Padding(
+                      padding: EdgeInsetsDirectional.only(start: 9.0),
+                      child: InkWell(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              "assets/images/s_sound.png",
+
+                              height: 26.0,
+                              width: 26.0,
+                              // color: isPlaying ? colors.primary : Colors.red,
+                            ),
+                            Padding(
+                                padding: EdgeInsetsDirectional.only(top: 4.0),
+                                child: Text(
+                                  getTranslated(context, 'speakLoud_lbl')!,
+                                  style: Theme.of(this.context)
+                                      .textTheme
+                                      .caption
+                                      ?.copyWith(
+                                          color: isPlaying
+                                              ? colors.primary
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .fontColor
+                                                  .withOpacity(0.8),
+                                          fontSize: 9.0),
+                                ))
+                          ],
+                        ),
+                        onTap: () {
+                          if (isPlaying) {
+                            _stop();
+                          } else {
+                            final document = parse(widget.model!.desc);
+                            String parsedString = parse(document.body!.text)
+                                .documentElement!
+                                .text;
+                            _speak(parsedString);
+                          }
+                        },
+                      )),
                   Padding(
                     padding: EdgeInsetsDirectional.only(start: 9.0),
                     child: InkWell(
@@ -1757,47 +1759,45 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                         },
                       )),
                   Padding(
-                      padding: EdgeInsetsDirectional.only(start: 9.0),
-                      child: InkWell(
-                        child: Column(
-                          children: [
-                            Image.asset(
-                              "assets/images/s_sound.png",
-
-                              height: 26.0,
-                              width: 26.0,
-                              // color: isPlaying ? colors.primary : Colors.red,
-                            ),
-                            Padding(
-                                padding: EdgeInsetsDirectional.only(top: 4.0),
-                                child: Text(
-                                  getTranslated(context, 'speakLoud_lbl')!,
-                                  style: Theme.of(this.context)
-                                      .textTheme
-                                      .caption
-                                      ?.copyWith(
-                                          color: isPlaying
-                                              ? colors.primary
-                                              : Theme.of(context)
-                                                  .colorScheme
-                                                  .fontColor
-                                                  .withOpacity(0.8),
-                                          fontSize: 9.0),
-                                ))
-                          ],
-                        ),
-                        onTap: () {
-                          if (isPlaying) {
-                            _stop();
-                          } else {
-                            final document = parse(widget.model!.desc);
-                            String parsedString = parse(document.body!.text)
-                                .documentElement!
-                                .text;
-                            _speak(parsedString);
-                          }
-                        },
-                      )),
+                    padding: EdgeInsetsDirectional.only(start: 9.0),
+                    child: InkWell(
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            "assets/images/s_share.png",
+                            height: 26.0,
+                            width: 26.0,
+                          ),
+                          Padding(
+                              padding: EdgeInsetsDirectional.only(top: 4.0),
+                              child: Text(
+                                getTranslated(context, 'share_lbl')!,
+                                style: Theme.of(this.context)
+                                    .textTheme
+                                    .caption
+                                    ?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .fontColor
+                                            .withOpacity(0.8),
+                                        fontSize: 9.0),
+                              ))
+                        ],
+                      ),
+                      onTap: () async {
+                        _isNetworkAvail = await isNetworkAvailable();
+                        if (_isNetworkAvail) {
+                          createDynamicLink(
+                            widget.model!.id!,
+                            widget.index!,
+                            widget.model!.title!,
+                          );
+                        } else {
+                          setSnackbar(getTranslated(context, 'internetmsg')!);
+                        }
+                      },
+                    ),
+                  ),
                 ],
               )
         : Container();
@@ -2566,18 +2566,33 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
       child: InkWell(
         child: Stack(
           children: <Widget>[
-            ClipRRect(
-                borderRadius: BorderRadius.circular(0.0),
-                child: FadeInImage.assetNetwork(
-                  image: newsList[index].image!,
-                  height: 99.0,
-                  width: 99.0,
-                  fit: BoxFit.cover,
-                  placeholder: placeHolder,
-                  imageErrorBuilder: (context, error, stackTrace) {
-                    return errorWidget(250, 193);
-                  },
-                )),
+            Stack(alignment: Alignment.center, children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(0.0),
+                  child: FadeInImage.assetNetwork(
+                    image: newsList[index].image!,
+                    height: 99.0,
+                    width: 99.0,
+                    fit: BoxFit.cover,
+                    placeholder: placeHolder,
+                    imageErrorBuilder: (context, error, stackTrace) {
+                      return errorWidget(250, 193);
+                    },
+                  )),
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(50.0),
+                  child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                          height: 35,
+                          width: 35,
+                          // padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: Center(child: Icon(Icons.play_arrow))))),
+            ]),
             Positioned.directional(
                 textDirection: Directionality.of(context),
                 // bottom: 7.0,

@@ -847,7 +847,7 @@ class SubHome2State extends State<SubHome2> {
                       padding: EdgeInsets.only(bottom: 15.0),
                       child: Container(
                           padding: EdgeInsets.all(7.0),
-                          height: 320,
+                          height: 0,
                           width: double.infinity,
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.boxColor,
@@ -876,18 +876,27 @@ class SubHome2State extends State<SubHome2> {
             child: InkWell(
               child: Stack(
                 children: <Widget>[
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(10.0),
-                      child: FadeInImage.assetNetwork(
-                        image: comList[index].image!,
-                        height: MediaQuery.of(context).size.width * (9 / 16),
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                        placeholder: placeHolder,
-                        imageErrorBuilder: (context, error, stackTrace) {
-                          return errorWidget(320, double.infinity);
-                        },
-                      )),
+                  Column(
+                    children: [
+                      ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: FadeInImage.assetNetwork(
+                            image: comList[index].image!,
+                            height:
+                                MediaQuery.of(context).size.width * (8 / 16),
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            placeholder: placeHolder,
+                            imageErrorBuilder: (context, error, stackTrace) {
+                              return errorWidget(320, double.infinity);
+                            },
+                          )),
+                      Container(
+                        color: Colors.transparent,
+                        height: 70,
+                      ),
+                    ],
+                  ),
                   comList[index].contentType == "video_upload" ||
                           comList[index].contentType == "video_youtube" ||
                           comList[index].contentType == "video_other"
@@ -1130,93 +1139,6 @@ class SubHome2State extends State<SubHome2> {
                                                         FontWeight.bold),
                                               ),
                                             ),
-                                            // Text(
-                                            //   comList[index].question == null
-                                            //       ? '0 Comments'
-                                            //       : comList[index].question! +
-                                            //           ' Comment',
-                                            //   style: TextStyle(
-                                            //       fontSize: 12,
-                                            //       fontWeight: FontWeight.bold),
-                                            // ),
-
-                                            // Spacer(),
-                                            // InkWell(
-                                            //   child: SvgPicture.asset(
-                                            //     bookMarkValue.contains(
-                                            //             comList[index].id)
-                                            //         ? "assets/images/bookmarkfilled_icon.svg"
-                                            //         : "assets/images/bookmark_icon.svg",
-                                            //     semanticsLabel: 'bookmark icon',
-                                            //     height: 19,
-                                            //     width: 19,
-                                            //   ),
-                                            //   onTap: () async {
-                                            //     _isNetworkAvail =
-                                            //         await isNetworkAvailable();
-                                            //     if (CUR_USERID != "") {
-                                            //       if (_isNetworkAvail) {
-                                            //         setState(() {
-                                            //           bookMarkValue.contains(
-                                            //                   comList[index]
-                                            //                       .id!)
-                                            //               ? _setBookmark(
-                                            //                   "0",
-                                            //                   comList[index]
-                                            //                       .id!)
-                                            //               : _setBookmark(
-                                            //                   "1",
-                                            //                   comList[index]
-                                            //                       .id!);
-                                            //         });
-                                            //       } else {
-                                            //         setSnackbar(getTranslated(
-                                            //             context,
-                                            //             'internetmsg')!);
-                                            //       }
-                                            //     } else {
-                                            //       Navigator.push(
-                                            //           context,
-                                            //           MaterialPageRoute(
-                                            //             builder: (context) =>
-                                            //                 Login(),
-                                            //           ));
-                                            //       // Navigator.push(
-                                            //       //     context,
-                                            //       //     MaterialPageRoute(
-                                            //       //         builder: (BuildContext
-                                            //       //                 context) =>
-                                            //       //             RequestOtp()));
-                                            //     }
-                                            //   },
-                                            // ),
-                                            // Padding(
-                                            //   padding:
-                                            //       EdgeInsetsDirectional.only(
-                                            //           start: 13.0),
-                                            //   child: InkWell(
-                                            //     child: SvgPicture.asset(
-                                            //       "assets/images/share_icon.svg",
-                                            //       semanticsLabel: 'share icon',
-                                            //       height: 19,
-                                            //       width: 19,
-                                            //     ),
-                                            //     onTap: () async {
-                                            //       _isNetworkAvail =
-                                            //           await isNetworkAvailable();
-                                            //       if (_isNetworkAvail) {
-                                            //         createDynamicLink(
-                                            //             comList[index].id!,
-                                            //             index,
-                                            //             comList[index].title!);
-                                            //       } else {
-                                            //         setSnackbar(getTranslated(
-                                            //             context,
-                                            //             'internetmsg')!);
-                                            //       }
-                                            //     },
-                                            //   ),
-                                            // )
                                           ],
                                         ))
                                   ],

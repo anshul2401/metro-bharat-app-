@@ -1112,77 +1112,76 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               )
                             ],
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            child: GridView.builder(
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  mainAxisSpacing: 15,
-                                  crossAxisCount: 3,
-                                  childAspectRatio: 3 / 3.7,
-                                ),
-                                shrinkWrap: true,
-                                itemCount: channelList.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedChannelName =
-                                              channelList[index].channelId!;
-                                          selectedChannelImg =
-                                              channelList[index].channel_image!;
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context)
-                                              .pushNamedAndRemoveUntil(
-                                                  "/home",
-                                                  (Route<dynamic> route) =>
-                                                      false);
-                                        });
-                                      },
-                                      child: Column(
-                                        children: [
-                                          Image.network(channelList[index]
-                                                      .channel_image ==
-                                                  null
-                                              ? ''
-                                              : channelList[index]
-                                                  .channel_image!),
-                                          Container(
-                                            alignment: Alignment.center,
-                                            padding: EdgeInsets.all(8),
-                                            decoration: BoxDecoration(
-                                              border: Border.all(),
-                                              // borderRadius: BorderRadius.circular(15),
-                                              color: selectedChannelName ==
-                                                      channelList[index]
-                                                          .channelId
-                                                  ? Colors.red.withOpacity(0.1)
-                                                  : Colors.grey
-                                                      .withOpacity(0.5),
-                                            ),
-                                            child: Text(
-                                              channelList[index].channelName!,
-                                              style: TextStyle(
-                                                color: selectedChannelName ==
-                                                        channelList[index]
-                                                            .channelId
-                                                    ? Colors.red
-                                                    : Colors.black,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }),
-                          ),
+
+                          channelListContent(),
+                          // Container(
+                          //   child: GridView.builder(
+                          //       gridDelegate:
+                          //           const SliverGridDelegateWithFixedCrossAxisCount(
+                          //         mainAxisSpacing: 15,
+                          //         crossAxisCount: 3,
+                          //         childAspectRatio: 3 / 3.7,
+                          //       ),
+                          //       shrinkWrap: true,
+                          //       itemCount: channelList.length,
+                          //       itemBuilder: (context, index) {
+                          //         return Padding(
+                          //           padding: const EdgeInsets.all(3.0),
+                          //           child: GestureDetector(
+                          //             onTap: () {
+                          //               setState(() {
+                          //                 selectedChannelName =
+                          //                     channelList[index].channelId!;
+                          //                 selectedChannelImg =
+                          //                     channelList[index].channel_image!;
+                          //                 Navigator.of(context).pop();
+                          //                 Navigator.of(context)
+                          //                     .pushNamedAndRemoveUntil(
+                          //                         "/home",
+                          //                         (Route<dynamic> route) =>
+                          //                             false);
+                          //               });
+                          //             },
+                          //             child: Column(
+                          //               children: [
+                          //                 Image.network(channelList[index]
+                          //                             .channel_image ==
+                          //                         null
+                          //                     ? ''
+                          //                     : channelList[index]
+                          //                         .channel_image!),
+                          //                 Container(
+                          //                   alignment: Alignment.center,
+                          //                   padding: EdgeInsets.all(8),
+                          //                   decoration: BoxDecoration(
+                          //                     border: Border.all(),
+                          //                     // borderRadius: BorderRadius.circular(15),
+                          //                     color: selectedChannelName ==
+                          //                             channelList[index]
+                          //                                 .channelId
+                          //                         ? Colors.red.withOpacity(0.1)
+                          //                         : Colors.grey
+                          //                             .withOpacity(0.5),
+                          //                   ),
+                          //                   child: Text(
+                          //                     channelList[index].channelName!,
+                          //                     style: TextStyle(
+                          //                       color: selectedChannelName ==
+                          //                               channelList[index]
+                          //                                   .channelId
+                          //                           ? Colors.red
+                          //                           : Colors.black,
+                          //                       fontSize: 12,
+                          //                       fontWeight: FontWeight.bold,
+                          //                     ),
+                          //                   ),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           ),
+                          //         );
+                          //       }),
+                          // ),
                           const SizedBox(
                             height: 15,
                           )
@@ -1832,6 +1831,148 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ),
                     ),
                   );
+  }
+
+  channelListContent() {
+    return !_isLoading
+        ? Padding(
+            padding: EdgeInsetsDirectional.only(top: 25.0),
+            child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 3 / 3.8,
+                ),
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: channelList.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedChannelName = channelList[index].channelId!;
+                        selectedChannelImg = channelList[index].channel_image!;
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            "/home", (Route<dynamic> route) => false);
+                      });
+                    },
+                    child: Column(
+                      children: [
+                        Padding(
+                            padding: EdgeInsets.only(top: 10.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                    height: 70,
+                                    width:
+                                        MediaQuery.of(context).size.width / 3.5,
+                                    child: Image(
+                                      fit: BoxFit.fitWidth,
+                                      image: NetworkImage(channelList[index]
+                                                  .channel_image ==
+                                              null
+                                          ? ''
+                                          : channelList[index].channel_image!),
+                                    )),
+                                Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .boxColor,
+                                      boxShadow: [
+                                        BoxShadow(
+                                            blurRadius: 10.0,
+                                            offset: const Offset(5.0, 5.0),
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .fontColor
+                                                .withOpacity(0.1),
+                                            spreadRadius: 1.0),
+                                      ],
+                                    ),
+                                    child: Material(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .boxColor,
+                                      child: InkWell(
+                                        highlightColor: Theme.of(context)
+                                            .colorScheme
+                                            .boxColor,
+                                        splashColor: colors.primary,
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Container(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .boxColor,
+                                          height: 45,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              3.5,
+                                          // padding: EdgeInsetsDirectional.only(
+                                          //     start: 20.0,
+                                          //     end: 15.0,
+                                          //     top: 10.0,
+                                          //     bottom: 10.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    3.5,
+                                                child: Text(
+                                                    channelList[index]
+                                                        .channelName!,
+                                                    softWrap: true,
+                                                    textAlign: TextAlign.center,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .subtitle1
+                                                        ?.copyWith(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .fontColor,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            letterSpacing: 0.5,
+                                                            fontSize: 12)),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          setState(() {
+                                            selectedChannelName =
+                                                channelList[index].channelId!;
+                                            selectedChannelImg =
+                                                channelList[index]
+                                                    .channel_image!;
+                                            Navigator.of(context).pop();
+                                            Navigator.of(context)
+                                                .pushNamedAndRemoveUntil(
+                                                    "/home",
+                                                    (Route<dynamic> route) =>
+                                                        false);
+                                          });
+                                        },
+                                      ),
+                                    )),
+                              ],
+                            )),
+                      ],
+                    ),
+                  );
+                }))
+        : Padding(
+            padding: EdgeInsets.only(top: kToolbarHeight),
+            child: CircularProgressIndicator());
   }
 
   Widget weatherDataView() {
