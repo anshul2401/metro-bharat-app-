@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "157045721306",
+    "project_id": "news-app-d5b6b",
+    "storage_bucket": "news-app-d5b6b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:157045721306:android:9edf07990dede1636cfde3",
+        "android_client_info": {
+          "package_name": "com.metromumbai.newsapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "157045721306-6i6nrdeedcaa8flr3ap16j7dkr7dsdj0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.metromumbai.newsapp",
+            "certificate_hash": "7ecdbe6cacc4f6947e223e935146fc0e157b6ac6"
+          }
+        },
+        {
+          "client_id": "157045721306-k27to9d2nf1jgojv0bli9libtsuafc12.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoxlJ37ulxTzXYb5jhDeFnN9zcxGVpAIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "157045721306-k27to9d2nf1jgojv0bli9libtsuafc12.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
