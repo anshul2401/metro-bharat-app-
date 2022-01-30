@@ -42,6 +42,7 @@ class SubHome2 extends StatefulWidget {
     this.index,
     this.subCatId,
     this.channelName,
+    this.sortOption,
   });
 
   ScrollController? scrollController;
@@ -52,6 +53,7 @@ class SubHome2 extends StatefulWidget {
   int? index;
   String? subCatId;
   String? channelName;
+  String? sortOption;
 
   SubHome2State createState() => new SubHome2State();
 }
@@ -90,6 +92,7 @@ class SubHome2State extends State<SubHome2> {
   List<News> comList = [];
   bool isFrom = false;
   List<Map<String, String>> comments = [];
+  String sortOpt = 'date_newest';
 
   void _updateScrollPosition() {
     if (!_innerListIsScrolled &&
@@ -157,7 +160,8 @@ class SubHome2State extends State<SubHome2> {
   @override
   void didUpdateWidget(covariant SubHome2 oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.subCatId != widget.subCatId) {
+    if (oldWidget.subCatId != widget.subCatId ||
+        oldWidget.sortOption != widget.sortOption) {
       updateData();
     }
   }
@@ -472,6 +476,16 @@ class SubHome2State extends State<SubHome2> {
                     ? newsList.add(element)
                     : null;
               });
+
+              widget.sortOption == 'Most Liked'
+                  ? newsList
+                      .sort((a, b) => b.totalLikes!.compareTo(a.totalLikes!))
+                  : widget.sortOption == 'Most Viewd'
+                      ? newsList
+                          .sort((a, b) => b.counter!.compareTo(a.counter!))
+                      : widget.sortOption == 'Date(Oldest)'
+                          ? newsList.sort((a, b) => a.date!.compareTo(b.date!))
+                          : newsList.sort((a, b) => b.date!.compareTo(a.date!));
               // newsList.forEach((element) async {
               //   var param = {
               //     ACCESS_KEY: access_key,
@@ -879,11 +893,14 @@ class SubHome2State extends State<SubHome2> {
                   Column(
                     children: [
                       ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            topRight: Radius.circular(10),
+                          ),
                           child: FadeInImage.assetNetwork(
                             image: comList[index].image!,
                             height:
-                                MediaQuery.of(context).size.width * (8 / 16),
+                                MediaQuery.of(context).size.width * (9 / 16),
                             width: double.infinity,
                             fit: BoxFit.cover,
                             placeholder: placeHolder,
@@ -893,7 +910,7 @@ class SubHome2State extends State<SubHome2> {
                           )),
                       Container(
                         color: Colors.transparent,
-                        height: 70,
+                        height: 100,
                       ),
                     ],
                   ),
@@ -901,8 +918,8 @@ class SubHome2State extends State<SubHome2> {
                           comList[index].contentType == "video_youtube" ||
                           comList[index].contentType == "video_other"
                       ? Positioned.directional(
-                          top: MediaQuery.of(context).size.height / 20,
-                          end: MediaQuery.of(context).size.width / 2.3,
+                          top: MediaQuery.of(context).size.height / 9,
+                          end: MediaQuery.of(context).size.width / 2.5,
                           textDirection: Directionality.of(context),
                           child: InkWell(
                             child: ClipRRect(
@@ -936,7 +953,7 @@ class SubHome2State extends State<SubHome2> {
                           child: BackdropFilter(
                               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                               child: Container(
-                                alignment: Alignment.center,
+                                alignment: Alignment.centerLeft,
                                 padding: EdgeInsets.all(10.0),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(
@@ -981,91 +998,91 @@ class SubHome2State extends State<SubHome2> {
                                               MainAxisAlignment.spaceBetween,
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
-                                            comList[index].tagName! != ""
-                                                ? SizedBox(
-                                                    height: 23.0,
-                                                    child: ListView.builder(
-                                                        physics:
-                                                            ClampingScrollPhysics(),
-                                                        scrollDirection:
-                                                            Axis.horizontal,
-                                                        shrinkWrap: true,
-                                                        itemCount:
-                                                            tagList.length >= 3
-                                                                ? 3
-                                                                : tagList
-                                                                    .length,
-                                                        itemBuilder:
-                                                            (context, index) {
-                                                          return Padding(
-                                                              padding: EdgeInsetsDirectional
-                                                                  .only(
-                                                                      start: index ==
-                                                                              0
-                                                                          ? 0
-                                                                          : 4),
-                                                              child: InkWell(
-                                                                child:
-                                                                    Container(
-                                                                        height:
-                                                                            23.0,
-                                                                        width:
-                                                                            65,
-                                                                        alignment:
-                                                                            Alignment
-                                                                                .center,
-                                                                        padding: EdgeInsetsDirectional.only(
-                                                                            start:
-                                                                                3.0,
-                                                                            end:
-                                                                                3.0,
-                                                                            top:
-                                                                                2.5,
-                                                                            bottom:
-                                                                                2.5),
-                                                                        decoration:
-                                                                            BoxDecoration(
-                                                                          borderRadius:
-                                                                              BorderRadius.circular(3.0),
-                                                                          color: colors
-                                                                              .primary
-                                                                              .withOpacity(0.08),
-                                                                        ),
-                                                                        child:
-                                                                            Text(
-                                                                          tagList[
-                                                                              index],
-                                                                          style: Theme.of(context)
-                                                                              .textTheme
-                                                                              .bodyText2
-                                                                              ?.copyWith(
-                                                                                color: colors.primary,
-                                                                                fontSize: 12,
-                                                                              ),
-                                                                          overflow:
-                                                                              TextOverflow.ellipsis,
-                                                                          softWrap:
-                                                                              true,
-                                                                        )),
-                                                                onTap: () {
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      MaterialPageRoute(
-                                                                        builder:
-                                                                            (context) =>
-                                                                                NewsTag(
-                                                                          tadId:
-                                                                              tagId[index],
-                                                                          tagName:
-                                                                              tagList[index],
-                                                                          updateParent:
-                                                                              updateHomePage,
-                                                                        ),
-                                                                      ));
-                                                                },
-                                                              ));
-                                                        }))
-                                                : Container(),
+                                            // comList[index].tagName! != ""
+                                            //     ? SizedBox(
+                                            //         height: 23.0,
+                                            //         child: ListView.builder(
+                                            //             physics:
+                                            //                 ClampingScrollPhysics(),
+                                            //             scrollDirection:
+                                            //                 Axis.horizontal,
+                                            //             shrinkWrap: true,
+                                            //             itemCount:
+                                            //                 tagList.length >= 3
+                                            //                     ? 3
+                                            //                     : tagList
+                                            //                         .length,
+                                            //             itemBuilder:
+                                            //                 (context, index) {
+                                            //               return Padding(
+                                            //                   padding: EdgeInsetsDirectional
+                                            //                       .only(
+                                            //                           start: index ==
+                                            //                                   0
+                                            //                               ? 0
+                                            //                               : 4),
+                                            //                   child: InkWell(
+                                            //                     child:
+                                            //                         Container(
+                                            //                             height:
+                                            //                                 23.0,
+                                            //                             width:
+                                            //                                 65,
+                                            //                             alignment:
+                                            //                                 Alignment
+                                            //                                     .center,
+                                            //                             padding: EdgeInsetsDirectional.only(
+                                            //                                 start:
+                                            //                                     3.0,
+                                            //                                 end:
+                                            //                                     3.0,
+                                            //                                 top:
+                                            //                                     2.5,
+                                            //                                 bottom:
+                                            //                                     2.5),
+                                            //                             decoration:
+                                            //                                 BoxDecoration(
+                                            //                               borderRadius:
+                                            //                                   BorderRadius.circular(3.0),
+                                            //                               color: colors
+                                            //                                   .primary
+                                            //                                   .withOpacity(0.08),
+                                            //                             ),
+                                            //                             child:
+                                            //                                 Text(
+                                            //                               tagList[
+                                            //                                   index],
+                                            //                               style: Theme.of(context)
+                                            //                                   .textTheme
+                                            //                                   .bodyText2
+                                            //                                   ?.copyWith(
+                                            //                                     color: colors.primary,
+                                            //                                     fontSize: 12,
+                                            //                                   ),
+                                            //                               overflow:
+                                            //                                   TextOverflow.ellipsis,
+                                            //                               softWrap:
+                                            //                                   true,
+                                            //                             )),
+                                            //                     onTap: () {
+                                            //                       Navigator.push(
+                                            //                           context,
+                                            //                           MaterialPageRoute(
+                                            //                             builder:
+                                            //                                 (context) =>
+                                            //                                     NewsTag(
+                                            //                               tadId:
+                                            //                                   tagId[index],
+                                            //                               tagName:
+                                            //                                   tagList[index],
+                                            //                               updateParent:
+                                            //                                   updateHomePage,
+                                            //                             ),
+                                            //                           ));
+                                            //                     },
+                                            //                   ));
+                                            //             }))
+                                            //     : Container(),
                                             Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment

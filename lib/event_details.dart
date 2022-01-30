@@ -11,6 +11,7 @@ import 'package:news_app/Helper/Constant.dart';
 import 'package:news_app/Helper/Session.dart';
 import 'package:news_app/Helper/String.dart';
 import 'package:news_app/Model/Events.dart';
+import 'package:news_app/RequestOtp.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -25,6 +26,7 @@ class EventDetail extends StatefulWidget {
 class _EventDetailState extends State<EventDetail> {
   bool _isNetworkAvail = true;
   bool isLoading = false;
+  bool isFirst = false;
   @override
   void initState() {
     api();
@@ -39,6 +41,49 @@ class _EventDetailState extends State<EventDetail> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  _setLikesDisLikesForEvents(String status) async {
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      var param = {
+        ACCESS_KEY: access_key,
+        USER_ID: CUR_USERID,
+        'events_id': widget.model.id,
+        STATUS: status,
+      };
+
+      Response response = await post(
+              Uri.parse(baseUrl + 'set_like_dislike_for_events'),
+              body: param,
+              headers: headers)
+          .timeout(Duration(seconds: timeOut));
+
+      var getdata = json.decode(response.body);
+
+      String error = getdata["error"];
+
+      String msg = getdata["message"];
+
+      if (error == "false") {
+        if (status == "1") {
+          widget.model.like = "1";
+          widget.model.like_count =
+              (int.parse(widget.model.like_count!) + 1).toString();
+          setSnackbar('Voted Succesfully');
+        } else if (status == "0") {
+          widget.model.like = "0";
+          widget.model.like_count =
+              (int.parse(widget.model.like_count!) - 1).toString();
+          setSnackbar(getTranslated(context, 'dislike_succ')!);
+        }
+        // setState(() {
+        //   isFirst = false;
+        // });
+      }
+    } else {
+      setSnackbar(getTranslated(context, 'internetmsg')!);
+    }
   }
 
   @override
@@ -71,14 +116,72 @@ class _EventDetailState extends State<EventDetail> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.model.views! + ' views',
-                    style: Theme.of(this.context).textTheme.subtitle1?.copyWith(
-                          color: Colors.red,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        widget.model.views! + ' views',
+                        style: Theme.of(this.context)
+                            .textTheme
+                            .subtitle1
+                            ?.copyWith(
+                              color: Colors.red,
+                            ),
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          widget.model.like_count! + ' Votes',
+                          style: TextStyle(color: Colors.black),
                         ),
-                  ),
+                        RaisedButton(
+                          onPressed: () async {
+                            if (CUR_USERID != "") {
+                              if (_isNetworkAvail) {
+                                if (!isFirst) {
+                                  setState(() {
+                                    isFirst = true;
+                                  });
+                                  if (widget.model.like == "1") {
+                                    await _setLikesDisLikesForEvents(
+                                      "0",
+                                    );
+                                    setState(() {});
+                                  } else {
+                                    await _setLikesDisLikesForEvents(
+                                      "1",
+                                    );
+                                    setState(() {});
+                                  }
+                                }
+                              } else {
+                                setSnackbar(
+                                    getTranslated(context, 'internetmsg')!);
+                              }
+                            } else {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => Login()),
+                              // );
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          RequestOtp()));
+                            }
+                          },
+                          color: Colors.green,
+                          child: Text(
+                            'Vote now',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
                 titleView(),
                 descView(),

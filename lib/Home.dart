@@ -14,6 +14,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'package:intl/intl.dart';
 import 'package:location/location.dart' as loc;
@@ -28,6 +29,7 @@ import 'package:news_app/Model/BreakingNews.dart';
 import 'package:news_app/Model/Channel.dart';
 import 'package:news_app/Model/Events.dart';
 import 'package:news_app/Model/News.dart';
+import 'package:news_app/Model/Shorts.dart';
 import 'package:news_app/Model/event_category.dart';
 import 'package:news_app/NewsTag.dart';
 import 'package:news_app/NotificationList.dart';
@@ -42,7 +44,10 @@ import 'package:news_app/search_page.dart';
 import 'package:news_app/shorts.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:video_player/video_player.dart';
+import 'package:vimeo_player_flutter/vimeo_player_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'Helper/PushNotificationService.dart';
 import 'Live.dart';
@@ -65,25 +70,43 @@ class HomeState extends State<Home> {
   List<Widget>? fragments;
   DateTime? currentBackPressTime;
   bool _isNetworkAvail = true;
+  late TutorialCoachMark tutorialCoachMark;
+  List<TargetFocus> targets = <TargetFocus>[];
+  GlobalKey keyButton = GlobalKey();
+  GlobalKey keyButton1 = GlobalKey();
+  GlobalKey keyBottomNavigation1 = GlobalKey();
+  GlobalKey keyBottomNavigation2 = GlobalKey();
+  GlobalKey keyBottomNavigation3 = GlobalKey();
+  GlobalKey keyBottomNavigation4 = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    // selectedChannelName == ''
+    //     ? null
+    //     : Future.delayed(Duration.zero, showTutorial);
     getUserDetails();
     initDynamicLinks();
     fragments = [
       HomePage(
         isLiveTvPage: false,
         isEventPage: false,
+        isShortPage: false,
       ),
       HomePage(
         isLiveTvPage: true,
         isEventPage: false,
+        isShortPage: false,
       ),
-      ShortsPage(),
+      HomePage(
+        isLiveTvPage: false,
+        isEventPage: false,
+        isShortPage: true,
+      ),
       HomePage(
         isLiveTvPage: false,
         isEventPage: true,
+        isShortPage: false,
       ),
     ];
     firNotificationInitialize();
@@ -101,10 +124,152 @@ class HomeState extends State<Home> {
     setState(() {});
   }
 
+  void initTargets() {
+    targets.clear();
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation1",
+        keyTarget: keyBottomNavigation1,
+        alignSkip: Alignment.topRight,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Click here for home page",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation2",
+        keyTarget: keyBottomNavigation2,
+        alignSkip: Alignment.topRight,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Click here to view live tv",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation3",
+        keyTarget: keyBottomNavigation3,
+        alignSkip: Alignment.topRight,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Click here to view shorts",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation4",
+        keyTarget: keyBottomNavigation4,
+        alignSkip: Alignment.topRight,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Click here for events",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showTutorial() {
+    initTargets();
+    tutorialCoachMark = TutorialCoachMark(
+      context,
+      targets: targets,
+      colorShadow: Colors.red,
+      textSkip: "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.8,
+      onFinish: () {
+        print("finish");
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        print("skip");
+      },
+    )..show();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // WidgetsBinding.instance!.addPostFrameCallback((timeStamp)=> ShowCasw)
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: colors.bgColor,
@@ -193,40 +358,85 @@ class HomeState extends State<Home> {
       //     ],
       //   ),
       // ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        unselectedItemColor: Colors.grey,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-            ),
-            title: Text(
-              'Home',
+      bottomNavigationBar: Stack(
+        children: [
+          Container(
+            height: 50,
+            child: Row(
+              children: [
+                Expanded(
+                    child: Center(
+                  child: SizedBox(
+                    key: keyBottomNavigation1,
+                    height: 40,
+                    width: 40,
+                  ),
+                )),
+                Expanded(
+                    child: Center(
+                  child: SizedBox(
+                    key: keyBottomNavigation2,
+                    height: 40,
+                    width: 40,
+                  ),
+                )),
+                Expanded(
+                  child: Center(
+                    child: SizedBox(
+                      key: keyBottomNavigation3,
+                      height: 40,
+                      width: 40,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: SizedBox(
+                      key: keyBottomNavigation4,
+                      height: 40,
+                      width: 40,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.tv,
-            ),
-            title: Text(
-              'Live T.V.',
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            title: Text('Shorts'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event),
-            title: Text('Events'),
+          BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            unselectedItemColor: Colors.grey,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.home,
+                ),
+                title: Text(
+                  'Home',
+                ),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.tv,
+                ),
+                title: Text(
+                  'Live T.V.',
+                ),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.notifications),
+                title: Text('Shorts'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.event),
+                title: Text('Events'),
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.black,
+            iconSize: 20,
+            onTap: _onItemTapped,
+            elevation: 5,
           ),
         ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        iconSize: 20,
-        onTap: _onItemTapped,
-        elevation: 5,
       ),
       body: fragments?[_selectedIndex],
     );
@@ -441,7 +651,11 @@ class HomeState extends State<Home> {
 class HomePage extends StatefulWidget {
   final bool isLiveTvPage;
   final bool isEventPage;
-  HomePage({required this.isLiveTvPage, required this.isEventPage});
+  final bool isShortPage;
+  HomePage(
+      {required this.isLiveTvPage,
+      required this.isEventPage,
+      required this.isShortPage});
 
   @override
   HomePageState createState() => HomePageState();
@@ -514,11 +728,16 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   ScrollController controller1 = new ScrollController();
   bool isTab = true;
   SubHome2 subHome = SubHome2();
+  SubHome2 subHome2 = SubHome2();
   YoutubePlayerController? _yc;
   FlickManager? flickManager;
   bool showLiveTv = true;
   List<String> selectedChoices = [];
   bool showBreakingNews = true;
+  String? sortBy;
+  List<FlickManager> flickManager11 = [];
+  List<ShortsModel> shorts = [];
+  List<ShortsModel> tempShortList = [];
 
   @override
   void initState() {
@@ -545,6 +764,57 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     await _getBookmark();
     await getEvents();
     await getEventCat();
+    await getShorts();
+  }
+
+  Future<void> getShorts() async {
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      var param = {
+        ACCESS_KEY: access_key,
+        USER_ID: '0',
+      };
+
+      http.Response response = await http
+          .post(Uri.parse(baseUrl + 'get_video'), body: param, headers: headers)
+          .timeout(Duration(seconds: timeOut));
+
+      var getdata = json.decode(response.body);
+
+      String error = getdata["error"];
+      print('this is shorts');
+      print(getdata);
+      if (error == "false") {
+        var data = getdata["data"];
+
+        tempShortList =
+            (data as List).map((data) => ShortsModel.fromJson(data)).toList();
+        shorts.addAll(tempShortList);
+        setState(() {});
+        // shorts.forEach((element) {
+        //   print(element.contentValue);
+        //   if (element != "" || element != null) {
+        //     flickManager11.add(FlickManager(
+        //       videoPlayerController:
+        //           VideoPlayerController.network(element.contentValue!),
+        //       autoPlay: false,
+        //     ));
+        //   }
+        // });
+
+        // for (int i = 0; i < data.length; i++) {
+        //   catId = data[i]["category_id"];
+        // }
+        // setState(() {
+        //   selectedChoices = catId == "" ? catId!.split('') : catId!.split(',');
+        // });
+      }
+    } else {
+      // setState(() {
+      //   _isLoading = false;
+      // });
+      setSnackbar(getTranslated(context, 'internetmsg')!);
+    }
   }
 
   Future<void> getUserByCat() async {
@@ -827,25 +1097,29 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       labelStyle: Theme.of(context).textTheme.subtitle1?.copyWith(
             fontWeight: FontWeight.w600,
           ),
-      unselectedLabelColor: Colors.grey[600],
+      unselectedLabelColor: isDark! ? Colors.white : Colors.black,
       isScrollable: true,
 
-      // indicator: BoxDecoration(color: colors.primary.withOpacity(0.08)),
-      indicator: UnderlineTabIndicator(
-          borderSide: BorderSide(width: 2.0, color: colors.primary),
-          insets: EdgeInsets.symmetric(horizontal: 8.0)),
+      indicator: BoxDecoration(
+          color: colors.primary, borderRadius: BorderRadius.circular(5)),
+      // indicator: UnderlineTabIndicator(
+      //     borderSide: BorderSide(width: 2.0, color: colors.primary),
+      //     insets: EdgeInsets.symmetric(horizontal: 0.0)),
+
       tabs: _tabs
           .map((tab) => Container(
                 // decoration: BoxDecoration(color: Colors.red.withOpacity(0.07)),
-                height: 32,
+                height: 27,
                 padding: EdgeInsetsDirectional.all(0),
                 child: Tab(
                   text: tab['text'],
                 ),
               ))
           .toList(),
-      labelColor: colors.primary,
+      labelColor: Colors.white,
+
       controller: _tc,
+
       unselectedLabelStyle: Theme.of(context).textTheme.subtitle1?.copyWith(),
     );
   }
@@ -854,8 +1128,9 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return catList.length != 0
         ? catList[_tc!.index].subData!.length != 0
             ? Padding(
-                padding: EdgeInsetsDirectional.only(top: 10.0, start: 10),
+                padding: EdgeInsetsDirectional.only(top: 10.0, start: 0),
                 child: Container(
+                    color: Colors.white,
                     height: 27,
                     alignment: Alignment.centerLeft,
                     child: ListView.builder(
@@ -885,18 +1160,21 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
                                     // ),
                                     decoration: BoxDecoration(
-                                      border: selectSubCat == index
-                                          ? Border(
-                                              bottom: BorderSide(
-                                                  width: 2.0,
-                                                  color: Colors.red),
-                                            )
-                                          : Border(
-                                              bottom: BorderSide(
-                                                  width: 0.0,
-                                                  color: Colors.white),
-                                            ),
-                                    ),
+                                        // border: selectSubCat == index
+                                        //     ? Border(
+                                        //         bottom: BorderSide(
+                                        //             width: 2.0,
+                                        //             color: Colors.red),
+                                        //       )
+                                        //     : Border(
+                                        //         bottom: BorderSide(
+                                        //             width: 0.0,
+                                        //             color: Colors.white),
+                                        // ),
+                                        color: selectSubCat == index
+                                            ? Colors.red
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(5)),
                                     child: Text(
                                       catList[_tc!.index]
                                           .subData![index]
@@ -906,8 +1184,10 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           .subtitle2
                                           ?.copyWith(
                                               color: selectSubCat == index
-                                                  ? colors.primary
-                                                  : Colors.black,
+                                                  ? Colors.white
+                                                  : isDark!
+                                                      ? Colors.white
+                                                      : Colors.grey,
                                               fontSize: 12,
                                               fontWeight: selectSubCat == index
                                                   ? FontWeight.w600
@@ -929,6 +1209,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         catList: catList,
                                         scrollController: scrollController,
                                         channelName: selectedChannelName,
+                                        sortOption: sortBy,
                                       );
                                     } else {
                                       subHome = SubHome2(
@@ -941,6 +1222,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         catList: catList,
                                         scrollController: scrollController,
                                         channelName: selectedChannelName,
+                                        sortOption: sortBy,
                                       );
                                     }
                                   });
@@ -1079,11 +1361,255 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return bn;
   }
 
+  PageController shortcontroller = PageController(initialPage: 0);
+  viewVideo(ShortsModel shorts, String index) {
+    return Stack(children: [
+      Container(
+          alignment: Alignment.center,
+          child: FlickVideoPlayer(
+              flickManager: FlickManager(
+            videoPlayerController:
+                VideoPlayerController.network(shorts.contentValue!),
+            autoPlay: false,
+          ))),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20, left: 20),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Text(
+                shorts.title!,
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 100, left: 20),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Text(
+                    shorts.disc!,
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 100, right: 20),
+                child: Column(
+                  children: [
+                    InkWell(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(55.0),
+                          child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                              child: Container(
+                                height: 35,
+                                width: 35,
+                                // padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color: colors.tempboxColor.withOpacity(0.5),
+                                    shape: BoxShape.circle),
+                                child: Image.asset(
+                                  shorts.like == "1"
+                                      ? "assets/images/s_like_filled.png"
+                                      : "assets/images/s_like_unfilled.png",
+                                  // color: Colors.red,
+                                  // semanticsLabel: 'like icon',
+                                ),
+                              ))),
+                      onTap: () async {
+                        _isNetworkAvail = await isNetworkAvailable();
+
+                        if (CUR_USERID != "") {
+                          if (_isNetworkAvail) {
+                            if (!isFirst) {
+                              setState(() {
+                                isFirst = true;
+                              });
+                              if (shorts.like == "1") {
+                                _setLikesDisLikesForShort(
+                                    "0", shorts.id!, int.parse(index));
+
+                                setState(() {});
+                              } else {
+                                _setLikesDisLikesForShort(
+                                    "1", shorts.id!, int.parse(index));
+
+                                setState(() {});
+                              }
+                            }
+                          } else {
+                            setSnackbar(getTranslated(context, 'internetmsg')!);
+                          }
+                        } else {
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (context) => Login(),
+                          //     ));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      RequestOtp()));
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      shorts.likes! + ' Like',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.only(start: 9.0),
+                      child: InkWell(
+                        child: Column(
+                          children: [
+                            Image.asset(
+                              "assets/images/s_share.png",
+                              height: 30.0,
+                              width: 30.0,
+                            ),
+                            Padding(
+                                padding: EdgeInsetsDirectional.only(top: 4.0),
+                                child: Text(
+                                  getTranslated(context, 'share_lbl')!,
+                                  style: Theme.of(this.context)
+                                      .textTheme
+                                      .caption
+                                      ?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .fontColor
+                                              .withOpacity(0.8),
+                                          fontSize: 9.0),
+                                ))
+                          ],
+                        ),
+                        onTap: () async {
+                          _isNetworkAvail = await isNetworkAvailable();
+                          if (_isNetworkAvail) {
+                            createDynamicLink(
+                              shorts.id!,
+                              int.parse(shorts.id!),
+                              shorts.title!,
+                            );
+                          } else {
+                            setSnackbar(getTranslated(context, 'internetmsg')!);
+                          }
+                        },
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    ]);
+  }
+
+  _setLikesDisLikesForShort(String status, String id, int index) async {
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      var param = {
+        ACCESS_KEY: access_key,
+        USER_ID: CUR_USERID,
+        'shorts_id': id,
+        STATUS: status,
+      };
+
+      Response response = await post(
+              Uri.parse(baseUrl + 'set_like_dislike_for_shorts'),
+              body: param,
+              headers: headers)
+          .timeout(Duration(seconds: timeOut));
+
+      var getdata = json.decode(response.body);
+
+      String error = getdata["error"];
+
+      String msg = getdata["message"];
+
+      if (error == "false") {
+        if (status == "1") {
+          shorts[index].like = "1";
+          shorts[index].likes =
+              (int.parse(shorts[index].likes!) + 1).toString();
+          setSnackbar(getTranslated(context, 'like_succ')!);
+        } else if (status == "0") {
+          shorts[index].like = "0";
+          shorts[index].likes =
+              (int.parse(shorts[index].likes!) - 1).toString();
+          setSnackbar(getTranslated(context, 'dislike_succ')!);
+        }
+        setState(() {
+          isFirst = false;
+        });
+      }
+    } else {
+      setSnackbar(getTranslated(context, 'internetmsg')!);
+    }
+  }
+
+  _setLikesDisLikesForEvents(String status, String id, int index) async {
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      var param = {
+        ACCESS_KEY: access_key,
+        USER_ID: CUR_USERID,
+        'events_id': id,
+        STATUS: status,
+      };
+
+      Response response = await post(
+              Uri.parse(baseUrl + 'set_like_dislike_for_events'),
+              body: param,
+              headers: headers)
+          .timeout(Duration(seconds: timeOut));
+
+      var getdata = json.decode(response.body);
+
+      String error = getdata["error"];
+
+      String msg = getdata["message"];
+
+      if (error == "false") {
+        if (status == "1") {
+          shorts[index].like = "1";
+          shorts[index].likes =
+              (int.parse(shorts[index].likes!) + 1).toString();
+          setSnackbar(getTranslated(context, 'like_succ')!);
+        } else if (status == "0") {
+          shorts[index].like = "0";
+          shorts[index].likes =
+              (int.parse(shorts[index].likes!) - 1).toString();
+          setSnackbar(getTranslated(context, 'dislike_succ')!);
+        }
+        setState(() {
+          isFirst = false;
+        });
+      }
+    } else {
+      setSnackbar(getTranslated(context, 'internetmsg')!);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     deviceWidth = MediaQuery.of(context).size.width;
     deviceHeight = MediaQuery.of(context).size.height;
-    print(catList);
+
     return selectedChannelName == ''
         ? Scaffold(
             body: channelList.isEmpty
@@ -1188,69 +1714,15 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ]),
                   ),
           )
-        : widget.isEventPage
+        : widget.isShortPage
             ? Scaffold(
-                appBar: AppBar(
-                  title: GestureDetector(
-                    onTap: () {
-                      showMe(context);
-                    },
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 70,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 0, left: 10),
-                            child: Image.network(selectedChannelImg),
-                          ),
-                        ),
-                        Icon(Icons.arrow_drop_down),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    // TODO: add here the search bar
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => FilterNetworkListPage(),
-                            ));
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        FilterNetworkListPage(),
-                                  ));
-                            },
-                            icon: Icon(
-                              Icons.search_rounded,
-                              size: 35,
-                              color: Colors.white,
-                            )),
-                      ),
-                    ),
-                  ],
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                ),
-                drawer: Container(
-                  width: MediaQuery.of(context).size.width * 1,
-                  child: Drawer(
-                    child: Drawermain(),
-                  ),
-                ),
-                body: Container(
-                    child: SingleChildScrollView(child: viewEvents())),
-              )
-            : widget.isLiveTvPage
+                body: PageView(
+                    controller: shortcontroller,
+                    scrollDirection: Axis.vertical,
+                    children: shorts
+                        .map((e) => Container(child: viewVideo(e, e.id!)))
+                        .toList()))
+            : widget.isEventPage
                 ? Scaffold(
                     appBar: AppBar(
                       title: GestureDetector(
@@ -1299,29 +1771,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 )),
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Live(
-                                    liveNews: isliveNews,
-                                  ),
-                                ));
-                          },
-                          child: Container(
-                            padding: EdgeInsets.only(right: 20),
-                            // decoration: BoxDecoration(
-                            //   borderRadius: BorderRadius.circular(15),
-                            //   color: Colors.red,
-                            // ),
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [],
-                            ),
-                          ),
-                        ),
                       ],
                       backgroundColor: Colors.red,
                       foregroundColor: Colors.white,
@@ -1333,504 +1782,596 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         child: Drawermain(),
                       ),
                     ),
-                    body: Center(
-                      child: getLiveTv(),
-                    ),
+                    body: Container(
+                        child: SingleChildScrollView(child: viewEvents())),
                   )
-                : Scaffold(
-                    appBar: AppBar(
-                      title: GestureDetector(
-                        onTap: () {
-                          showMe(context);
-                        },
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 70,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(right: 0, left: 10),
-                                child: Image.network(selectedChannelImg),
-                              ),
-                            ),
-                            Icon(Icons.arrow_drop_down),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        // TODO: add here the search bar
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FilterNetworkListPage(),
-                                ));
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: IconButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            FilterNetworkListPage(),
-                                      ));
-                                },
-                                icon: Icon(
-                                  Icons.search_rounded,
-                                  size: 35,
-                                  color: Colors.white,
-                                )),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Live(
-                                    liveNews: isliveNews,
-                                  ),
-                                ));
-                          },
-                          child: Container(
-                            padding: EdgeInsets.only(right: 20),
-                            // decoration: BoxDecoration(
-                            //   borderRadius: BorderRadius.circular(15),
-                            //   color: Colors.red,
-                            // ),
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                : widget.isLiveTvPage
+                    ? Scaffold(
+                        appBar: AppBar(
+                          title: GestureDetector(
+                            onTap: () {
+                              showMe(context);
+                            },
+                            child: Row(
                               children: [
-                                SvgPicture.asset(
-                                  "assets/images/live_news.svg",
-                                  semanticsLabel: 'live news',
-                                  height: 21.0,
-                                  width: 21.0,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  'Live T.V.',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 10,
+                                Container(
+                                  width: 70,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 0, left: 10),
+                                    child: Image.network(selectedChannelImg),
                                   ),
                                 ),
+                                Icon(Icons.arrow_drop_down),
                               ],
                             ),
                           ),
-                        ),
-                      ],
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                    ),
-                    drawer: Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      child: Drawer(
-                        child: Drawermain(),
-                      ),
-                    ),
-                    key: _scaffoldKey,
-                    body: SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.only(
-                          start: 15.0,
-                          end: 15.0,
-                          bottom: 10.0,
-                        ),
-                        child: NestedScrollView(
-                          physics: AlwaysScrollableScrollPhysics(),
-                          controller: scrollController,
-                          clipBehavior: Clip.none,
-                          headerSliverBuilder:
-                              (BuildContext context, bool innerBoxIsScrolled) {
-                            return <Widget>[
-                              new SliverList(
-                                delegate: new SliverChildListDelegate([
-                                  // weatherDataView(),
-                                  // liveWithSearchView(),
-                                  // viewBreakingNews(),
-                                  // viewRecentContent(),
-                                  // CUR_USERID != "" && CATID != ""
-                                  //     ? viewUserNewsContent()
-                                  //     : Container(),
-                                  // catText(),
-                                  // tabBarData(),
-                                  // subTabData(),
-                                  // const SizedBox(
-                                  //   height: 20,
-                                  // ),
-                                  // weatherDataView(),
-                                  (isliveNews == "" && isliveNews == null)
-                                      ? Container()
-                                      : showLiveTv
-                                          ? getLiveTv()
-                                          : Container(
-                                              height: 10,
-                                            ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red,
-                                          backgroundBlendMode: BlendMode.srcIn,
-                                          borderRadius:
-                                              BorderRadius.circular(3),
-                                          gradient: LinearGradient(colors: [
-                                            Colors.red,
-                                            Colors.orange
-                                          ]),
-                                        ),
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.2,
-                                        height: 25,
-                                        child: Text(
-                                          'Breaking',
-                                          style: TextStyle(
-                                            color: Colors.yellow,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Color.fromRGBO(0, 0, 139, 1),
-                                        ),
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.72,
-                                        height: 25,
-                                        child: Marquee(
-                                          fadingEdgeStartFraction: 0.05,
-                                          text: breakingNews(),
-                                          scrollAxis: Axis.horizontal,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontStyle: FontStyle.italic,
-                                          ),
-                                          blankSpace: 300,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  // catShimmer()
-                                ]),
+                          actions: [
+                            // TODO: add here the search bar
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          FilterNetworkListPage(),
+                                    ));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                FilterNetworkListPage(),
+                                          ));
+                                    },
+                                    icon: Icon(
+                                      Icons.search_rounded,
+                                      size: 35,
+                                      color: Colors.white,
+                                    )),
                               ),
-                              SliverAppBar(
-                                toolbarHeight: 0,
-                                titleSpacing: 0,
-                                pinned: true,
-                                bottom: catList.length != 0
-                                    ? PreferredSize(
-                                        preferredSize: Size.fromHeight(
-                                          catList[_tc!.index].subData!.length !=
-                                                  0
-                                              ? 90
-                                              : 53,
-                                        ),
-                                        child: Column(children: [
-                                          tabBarData(),
-                                          subTabData(),
-                                          SizedBox(
-                                            height: 10,
-                                          ),
-
-                                          // weatherDataView(),
-                                          // getLiveTv(),
-                                        ]))
-                                    : PreferredSize(
-                                        preferredSize: Size.fromHeight(34),
-                                        child: catShimmer()),
-                                backgroundColor: isDark!
-                                    ? colors.tempdarkColor
-                                    : colors.bgColor,
-                                elevation: 0,
-                                floating: true,
-                              ),
-                              new SliverList(
-                                delegate: new SliverChildListDelegate([
-                                  // weatherDataView(),
-                                  // liveWithSearchView(),
-                                  // viewBreakingNews(),
-                                  // viewRecentContent(),
-                                  // CUR_USERID != "" && CATID != ""
-                                  //     ? viewUserNewsContent()
-                                  //     : Container(),
-                                  // catText(),
-                                  // tabBarData(),
-                                  // subTabData(),
-                                  // const SizedBox(
-                                  //   height: 20,
-                                  // ),
-                                  // weatherDataView(),
-                                  adList.isEmpty
-                                      ? Container()
-                                      : Container(
-                                          height: 150,
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          child: Image(
-                                            fit: BoxFit.fitWidth,
-                                            image: NetworkImage(adList[0]),
-                                          )),
-
-                                  _tc!.index == 0
-                                      ? viewBreakingNews()
-                                      : Container(),
-                                  // SizedBox(
-                                  //   height: 20,
-                                  // ),
-                                  // weatherDataView(),
-                                  // catShimmer()
-                                  // viewRecentContent(),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  // weatherDataView(),
-                                  // SizedBox(
-                                  //   height: 20,
-                                  // ),
-
-                                  Padding(
-                                    padding:
-                                        EdgeInsetsDirectional.only(start: 8.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(5),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Live(
+                                        liveNews: isliveNews,
                                       ),
-                                      padding: EdgeInsets.all(8),
-                                      child: Row(
+                                    ));
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(right: 20),
+                                // decoration: BoxDecoration(
+                                //   borderRadius: BorderRadius.circular(15),
+                                //   color: Colors.red,
+                                // ),
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [],
+                                ),
+                              ),
+                            ),
+                          ],
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                        ),
+                        drawer: Container(
+                          width: MediaQuery.of(context).size.width * 1,
+                          child: Drawer(
+                            child: Drawermain(),
+                          ),
+                        ),
+                        body: Center(
+                          child: getLiveTv(),
+                        ),
+                      )
+                    : Scaffold(
+                        appBar: AppBar(
+                          title: GestureDetector(
+                            onTap: () {
+                              showMe(context);
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 70,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 0, left: 10),
+                                    child: Image.network(selectedChannelImg),
+                                  ),
+                                ),
+                                Icon(Icons.arrow_drop_down),
+                              ],
+                            ),
+                          ),
+                          actions: [
+                            // TODO: add here the search bar
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          FilterNetworkListPage(),
+                                    ));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                FilterNetworkListPage(),
+                                          ));
+                                    },
+                                    icon: Icon(
+                                      Icons.search_rounded,
+                                      size: 35,
+                                      color: Colors.white,
+                                    )),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //       builder: (context) => Live(
+                                //         liveNews: isliveNews,
+                                //       ),
+                                //     ));
+                                setState(() {
+                                  showLiveTv = true;
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.only(right: 20),
+                                // decoration: BoxDecoration(
+                                //   borderRadius: BorderRadius.circular(15),
+                                //   color: Colors.red,
+                                // ),
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset(
+                                      "assets/images/live_news.svg",
+                                      semanticsLabel: 'live news',
+                                      height: 21.0,
+                                      width: 21.0,
+                                      color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Live T.V.',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                        ),
+                        drawer: Container(
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          child: Drawer(
+                            child: Drawermain(),
+                          ),
+                        ),
+                        key: _scaffoldKey,
+                        body: SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                              start: 15.0,
+                              end: 15.0,
+                              bottom: 10.0,
+                            ),
+                            child: NestedScrollView(
+                              physics: AlwaysScrollableScrollPhysics(),
+                              controller: scrollController,
+                              clipBehavior: Clip.none,
+                              headerSliverBuilder: (BuildContext context,
+                                  bool innerBoxIsScrolled) {
+                                return <Widget>[
+                                  new SliverList(
+                                    delegate: new SliverChildListDelegate([
+                                      // weatherDataView(),
+                                      // liveWithSearchView(),
+                                      // viewBreakingNews(),
+                                      // viewRecentContent(),
+                                      // CUR_USERID != "" && CATID != ""
+                                      //     ? viewUserNewsContent()
+                                      //     : Container(),
+                                      // catText(),
+                                      // tabBarData(),
+                                      // subTabData(),
+                                      // const SizedBox(
+                                      //   height: 20,
+                                      // ),
+                                      // weatherDataView(),
+                                      (isliveNews == "" && isliveNews == null)
+                                          ? Container()
+                                          : showLiveTv
+                                              ? getLiveTv()
+                                              : Container(
+                                                  height: 10,
+                                                ),
+                                      Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            catList[_tc!.index].categoryName!,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1
-                                                ?.copyWith(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .lightColor,
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                          Container(
+                                            padding: EdgeInsets.all(5),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              backgroundBlendMode:
+                                                  BlendMode.srcIn,
+                                              borderRadius:
+                                                  BorderRadius.circular(3),
+                                              gradient: LinearGradient(colors: [
+                                                Colors.red,
+                                                Colors.orange
+                                              ]),
+                                            ),
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.2,
+                                            height: 25,
+                                            child: Text(
+                                              'Breaking',
+                                              style: TextStyle(
+                                                color: Colors.yellow,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
-                                          catList.length != 0
-                                              ? catList[_tc!.index]
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Color.fromRGBO(0, 0, 139, 1),
+                                            ),
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.72,
+                                            height: 25,
+                                            child: Marquee(
+                                              fadingEdgeStartFraction: 0.05,
+                                              text: breakingNews(),
+                                              scrollAxis: Axis.horizontal,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontStyle: FontStyle.italic,
+                                              ),
+                                              blankSpace: 300,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // catShimmer()
+                                    ]),
+                                  ),
+                                  SliverAppBar(
+                                    toolbarHeight: 0,
+                                    titleSpacing: 0,
+                                    pinned: true,
+                                    bottom: catList.length != 0
+                                        ? PreferredSize(
+                                            preferredSize: Size.fromHeight(
+                                              catList[_tc!.index]
                                                           .subData!
                                                           .length !=
                                                       0
-                                                  ? Text(
-                                                      catList[_tc!.index]
-                                                                      .subData ==
-                                                                  null ||
-                                                              catList[_tc!.index]
-                                                                      .subData ==
-                                                                  []
-                                                          ? ''
-                                                          : catList[_tc!.index]
-                                                              .subData![
-                                                                  selectSubCat!]
-                                                              .subCatName!,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .subtitle2
-                                                          ?.copyWith(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .lightColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                    )
-                                                  : Container()
-                                              : Container(),
-                                        ],
-                                      ),
-                                    ),
+                                                  ? 90
+                                                  : 53,
+                                            ),
+                                            child: Column(children: [
+                                              tabBarData(),
+                                              subTabData(),
+
+                                              SizedBox(
+                                                height: 5,
+                                              ),
+
+                                              // weatherDataView(),
+                                              // getLiveTv(),
+                                            ]))
+                                        : PreferredSize(
+                                            preferredSize: Size.fromHeight(34),
+                                            child: catShimmer()),
+                                    backgroundColor: isDark!
+                                        ? colors.tempdarkColor
+                                        : colors.bgColor,
+                                    elevation: 0,
+                                    floating: true,
                                   ),
-                                  // catList.length != 0
-                                  //     ? TabBarView(
-                                  //         physics: NeverScrollableScrollPhysics(),
-                                  //         controller: _tc,
+                                  new SliverList(
+                                    delegate: new SliverChildListDelegate([
+                                      // weatherDataView(),
+                                      // liveWithSearchView(),
+                                      // viewBreakingNews(),
+                                      // viewRecentContent(),
+                                      // CUR_USERID != "" && CATID != ""
+                                      //     ? viewUserNewsContent()
+                                      //     : Container(),
+                                      // catText(),
+                                      // tabBarData(),
+                                      // subTabData(),
+                                      // const SizedBox(
+                                      //   height: 20,
+                                      // ),
+                                      // weatherDataView(),
+                                      adList.isEmpty
+                                          ? Container()
+                                          : Container(
+                                              height: 150,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              child: Image(
+                                                fit: BoxFit.fitWidth,
+                                                image: NetworkImage(adList[0]),
+                                              )),
 
-                                  //         //key: _key,
-                                  //         children: new List<Widget>.generate(
-                                  //             _tc!.length, (int index) {
-                                  //           // return viewRecentContent();
-                                  //           return isTab
-                                  //               ? SubHome(
-                                  //                   curTabId: catList[index].id,
-                                  //                   isSubCat: false,
-                                  //                   scrollController:
-                                  //                       scrollController,
-                                  //                   catList: catList,
-                                  //                   subCatId: "0",
-                                  //                   index: index,
-                                  //                   channelName:
-                                  //                       selectedChannelName,
-                                  //                 )
-                                  //               : subHome;
-                                  //         }),
-                                  //       )
-                                  //     : contentShimmer(context),
-                                ]),
-                              ),
-                            ];
-                          },
+                                      _tc!.index == 0
+                                          ? viewBreakingNews()
+                                          : Container(),
+                                      // SizedBox(
+                                      //   height: 20,
+                                      // ),
+                                      // weatherDataView(),
+                                      // catShimmer()
+                                      // viewRecentContent(),
+                                      SizedBox(
+                                        height: 15,
+                                      ),
+                                      // weatherDataView(),
+                                      // SizedBox(
+                                      //   height: 20,
+                                      // ),
 
-                          body: catList.length != 0
-                              ? TabBarView(
-                                  controller: _tc,
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.only(
+                                            start: 0.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                          ),
+                                          padding:
+                                              EdgeInsets.only(left: 8, top: 0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                catList[_tc!.index]
+                                                    .categoryName!,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .subtitle1
+                                                    ?.copyWith(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .lightColor,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                              ),
+                                              PopupMenuButton<String>(
+                                                icon: Icon(
+                                                  Icons.sort,
+                                                  color: Colors.white,
+                                                ),
+                                                onSelected: (val) {
+                                                  SubHome2 s = SubHome2();
+                                                  s = subHome;
 
-                                  //key: _key,
-                                  children: new List<Widget>.generate(
-                                      _tc!.length, (int index) {
-                                    // return viewRecentContent();
-                                    return isTab
-                                        ? SubHome2(
-                                            curTabId: catList[index].id,
-                                            isSubCat: false,
-                                            scrollController: scrollController,
-                                            catList: catList,
-                                            subCatId: "0",
-                                            index: index,
-                                            channelName: selectedChannelName,
-                                          )
-                                        : subHome;
-                                    // : Padding(
-                                    //     padding: const EdgeInsets.only(
-                                    //         top: 8.0, left: 7),
-                                    //     child: ListView.builder(
-                                    //         shrinkWrap: true,
-                                    //         itemCount: catList[index]
-                                    //             .subData!
-                                    //             .length,
-                                    //         itemBuilder: (context, indexx) {
-                                    //           print(catList[index]
-                                    //               .subData![indexx]
-                                    //               .id);
-                                    //           return Column(
-                                    //             mainAxisSize:
-                                    //                 MainAxisSize.min,
-                                    //             crossAxisAlignment:
-                                    //                 CrossAxisAlignment
-                                    //                     .start,
-                                    //             mainAxisAlignment:
-                                    //                 MainAxisAlignment.start,
-                                    //             children: [
-                                    //               Container(
-                                    //                 decoration:
-                                    //                     BoxDecoration(
-                                    //                   color: Colors.black,
-                                    //                   borderRadius:
-                                    //                       BorderRadius
-                                    //                           .circular(5),
-                                    //                 ),
-                                    //                 child: Padding(
-                                    //                   padding:
-                                    //                       const EdgeInsets
-                                    //                           .all(8.0),
-                                    //                   child: Text(
-                                    //                     catList[index]
-                                    //                         .subData![
-                                    //                             indexx]
-                                    //                         .subCatName!,
-                                    //                     style: TextStyle(
-                                    //                         color: Colors
-                                    //                             .white),
-                                    //                   ),
-                                    //                 ),
-                                    //               ),
-                                    //               Container(
-                                    //                 height: 300,
-                                    //                 child: SubHome(
-                                    //                   curTabId:
-                                    //                       catList[index].id,
-                                    //                   isSubCat: false,
-                                    //                   scrollController:
-                                    //                       scrollController,
-                                    //                   catList: catList,
-                                    //                   subCatId: catList[
-                                    //                           index]
-                                    //                       .subData![indexx]
-                                    //                       .id,
-                                    //                   index: index,
-                                    //                   channelName:
-                                    //                       selectedChannelName,
-                                    //                 ),
-                                    //               ),
-                                    //             ],
-                                    //           );
-                                    //         }),
-                                    //   );
-                                  }),
-                                )
-                              : contentShimmer(context),
-                          // subHome = SubHome(
-                          //               subCatId: "0",
-                          //               curTabId: catList[tcIndex].id!,
-                          //               index: tcIndex,
-                          //               isSubCat: true,
-                          //               catList: catList,
-                          //               scrollController: scrollController,
-                          //               channelName: selectedChannelName,
-                          //             );
-                          // body: catList.length != 0
-                          //     ? SingleChildScrollView(
-                          //         // physics: ClampingScrollPhysics(),
+                                                  setState(() {
+                                                    sortBy = val;
+                                                    subHome = SubHome2(
+                                                        subCatId: s.subCatId,
+                                                        curTabId: s.curTabId,
+                                                        index: s.index,
+                                                        isSubCat: s.isSubCat,
+                                                        catList: s.catList,
+                                                        scrollController:
+                                                            s.scrollController,
+                                                        channelName:
+                                                            s.channelName,
+                                                        sortOption: val);
+                                                    // sortBy = val!;
+                                                  });
+                                                  print(subHome.sortOption);
+                                                },
+                                                itemBuilder:
+                                                    (BuildContext context) {
+                                                  return {
+                                                    'Date(Newest)',
+                                                    'Most Liked',
+                                                    'Most Viewd',
+                                                    'Date(Oldest)'
+                                                  }.map((String choice) {
+                                                    return PopupMenuItem<
+                                                        String>(
+                                                      value: choice,
+                                                      child: Text(choice),
+                                                    );
+                                                  }).toList();
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                ];
+                              },
 
-                          //         child: Container(
-                          //           height: 900,
-                          //           width: MediaQuery.of(context).size.width,
-                          //           child: Column(
-                          //             mainAxisAlignment: MainAxisAlignment.end,
-                          //             children: [
-                          //               viewBreakingNews(),
-                          //               Container(
-                          //                 height: 900,
-                          //                 width: MediaQuery.of(context).size.width,
-                          //                 child: ListView.builder(
-                          //                     itemCount: _tc!.length,
-                          //                     shrinkWrap: true,
-                          //                     itemBuilder: (context, index) {
-                          //                       return isTab
-                          //                           ? SubHome(
-                          //                               curTabId: catList[index].id,
-                          //                               isSubCat: false,
-                          //                               scrollController:
-                          //                                   scrollController,
-                          //                               catList: catList,
-                          //                               subCatId: "0",
-                          //                               index: index,
-                          //                             )
-                          //                           : subHome;
-                          //                     }),
-                          //               ),
-                          //             ],
-                          //           ),
-                          //         ),
-                          //       )
-                          //     : contentShimmer(context),
+                              body: catList.length != 0
+                                  ? TabBarView(
+                                      controller: _tc,
+
+                                      //key: _key,
+                                      children: new List<Widget>.generate(
+                                          _tc!.length, (int index) {
+                                        // return viewRecentContent();
+                                        return isTab
+                                            ? SubHome2(
+                                                curTabId: catList[index].id,
+                                                isSubCat: false,
+                                                scrollController:
+                                                    scrollController,
+                                                catList: catList,
+                                                subCatId: "0",
+                                                index: index,
+                                                channelName:
+                                                    selectedChannelName,
+                                                sortOption: sortBy,
+                                              )
+                                            : subHome;
+                                        // : Padding(
+                                        //     padding: const EdgeInsets.only(
+                                        //         top: 8.0, left: 7),
+                                        //     child: ListView.builder(
+                                        //         shrinkWrap: true,
+                                        //         itemCount: catList[index]
+                                        //             .subData!
+                                        //             .length,
+                                        //         itemBuilder: (context, indexx) {
+                                        //           print(catList[index]
+                                        //               .subData![indexx]
+                                        //               .id);
+                                        //           return Column(
+                                        //             mainAxisSize:
+                                        //                 MainAxisSize.min,
+                                        //             crossAxisAlignment:
+                                        //                 CrossAxisAlignment
+                                        //                     .start,
+                                        //             mainAxisAlignment:
+                                        //                 MainAxisAlignment.start,
+                                        //             children: [
+                                        //               Container(
+                                        //                 decoration:
+                                        //                     BoxDecoration(
+                                        //                   color: Colors.black,
+                                        //                   borderRadius:
+                                        //                       BorderRadius
+                                        //                           .circular(5),
+                                        //                 ),
+                                        //                 child: Padding(
+                                        //                   padding:
+                                        //                       const EdgeInsets
+                                        //                           .all(8.0),
+                                        //                   child: Text(
+                                        //                     catList[index]
+                                        //                         .subData![
+                                        //                             indexx]
+                                        //                         .subCatName!,
+                                        //                     style: TextStyle(
+                                        //                         color: Colors
+                                        //                             .white),
+                                        //                   ),
+                                        //                 ),
+                                        //               ),
+                                        //               Container(
+                                        //                 height: 300,
+                                        //                 child: SubHome(
+                                        //                   curTabId:
+                                        //                       catList[index].id,
+                                        //                   isSubCat: false,
+                                        //                   scrollController:
+                                        //                       scrollController,
+                                        //                   catList: catList,
+                                        //                   subCatId: catList[
+                                        //                           index]
+                                        //                       .subData![indexx]
+                                        //                       .id,
+                                        //                   index: index,
+                                        //                   channelName:
+                                        //                       selectedChannelName,
+                                        //                 ),
+                                        //               ),
+                                        //             ],
+                                        //           );
+                                        //         }),
+                                        //   );
+                                      }),
+                                    )
+                                  : contentShimmer(context),
+                              // subHome = SubHome(
+                              //               subCatId: "0",
+                              //               curTabId: catList[tcIndex].id!,
+                              //               index: tcIndex,
+                              //               isSubCat: true,
+                              //               catList: catList,
+                              //               scrollController: scrollController,
+                              //               channelName: selectedChannelName,
+                              //             );
+                              // body: catList.length != 0
+                              //     ? SingleChildScrollView(
+                              //         // physics: ClampingScrollPhysics(),
+
+                              //         child: Container(
+                              //           height: 900,
+                              //           width: MediaQuery.of(context).size.width,
+                              //           child: Column(
+                              //             mainAxisAlignment: MainAxisAlignment.end,
+                              //             children: [
+                              //               viewBreakingNews(),
+                              //               Container(
+                              //                 height: 900,
+                              //                 width: MediaQuery.of(context).size.width,
+                              //                 child: ListView.builder(
+                              //                     itemCount: _tc!.length,
+                              //                     shrinkWrap: true,
+                              //                     itemBuilder: (context, index) {
+                              //                       return isTab
+                              //                           ? SubHome(
+                              //                               curTabId: catList[index].id,
+                              //                               isSubCat: false,
+                              //                               scrollController:
+                              //                                   scrollController,
+                              //                               catList: catList,
+                              //                               subCatId: "0",
+                              //                               index: index,
+                              //                             )
+                              //                           : subHome;
+                              //                     }),
+                              //               ),
+                              //             ],
+                              //           ),
+                              //         ),
+                              //       )
+                              //     : contentShimmer(context),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
+                      );
   }
 
   channelListContent() {
@@ -1860,111 +2401,122 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       children: [
                         Padding(
                             padding: EdgeInsets.only(top: 10.0),
-                            child: Column(
-                              children: [
-                                Container(
-                                    height: 70,
-                                    width:
-                                        MediaQuery.of(context).size.width / 3.5,
-                                    child: Image(
-                                      fit: BoxFit.fitWidth,
-                                      image: NetworkImage(channelList[index]
-                                                  .channel_image ==
-                                              null
-                                          ? ''
-                                          : channelList[index].channel_image!),
-                                    )),
-                                Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .boxColor,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            blurRadius: 10.0,
-                                            offset: const Offset(5.0, 5.0),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .fontColor
-                                                .withOpacity(0.1),
-                                            spreadRadius: 1.0),
-                                      ],
-                                    ),
-                                    child: Material(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .boxColor,
-                                      child: InkWell(
-                                        highlightColor: Theme.of(context)
-                                            .colorScheme
-                                            .boxColor,
-                                        splashColor: colors.primary,
+                            child: Container(
+                              padding: EdgeInsets.only(top: 8),
+                              decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.8)),
+                              child: Column(
+                                children: [
+                                  Container(
+                                      height: 70,
+                                      width: MediaQuery.of(context).size.width /
+                                          3.5,
+                                      child: Image(
+                                        fit: BoxFit.fitWidth,
+                                        image: NetworkImage(
+                                            channelList[index].channel_image ==
+                                                    null
+                                                ? ''
+                                                : channelList[index]
+                                                    .channel_image!),
+                                      )),
+                                  Container(
+                                      decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(10.0),
-                                        child: Container(
-                                          color: Theme.of(context)
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .boxColor,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              blurRadius: 10.0,
+                                              offset: const Offset(5.0, 5.0),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .fontColor
+                                                  .withOpacity(0.1),
+                                              spreadRadius: 1.0),
+                                        ],
+                                      ),
+                                      child: Material(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .boxColor,
+                                        child: InkWell(
+                                          highlightColor: Theme.of(context)
                                               .colorScheme
                                               .boxColor,
-                                          height: 45,
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              3.5,
-                                          // padding: EdgeInsetsDirectional.only(
-                                          //     start: 20.0,
-                                          //     end: 15.0,
-                                          //     top: 10.0,
-                                          //     bottom: 10.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    3.5,
-                                                child: Text(
-                                                    channelList[index]
-                                                        .channelName!,
-                                                    softWrap: true,
-                                                    textAlign: TextAlign.center,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .subtitle1
-                                                        ?.copyWith(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .fontColor,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            letterSpacing: 0.5,
-                                                            fontSize: 12)),
-                                              ),
-                                            ],
+                                          splashColor: colors.primary,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                          child: Container(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .boxColor,
+                                            height: 45,
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                3.5,
+                                            // padding: EdgeInsetsDirectional.only(
+                                            //     start: 20.0,
+                                            //     end: 15.0,
+                                            //     top: 10.0,
+                                            //     bottom: 10.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      3.5,
+                                                  child: Text(
+                                                      channelList[index]
+                                                          .channelName!,
+                                                      softWrap: true,
+                                                      textAlign: TextAlign
+                                                          .center,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1
+                                                          ?.copyWith(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .fontColor,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              letterSpacing:
+                                                                  0.5,
+                                                              fontSize: 12)),
+                                                ),
+                                              ],
+                                            ),
                                           ),
+                                          onTap: () {
+                                            setState(() {
+                                              selectedChannelName =
+                                                  channelList[index].channelId!;
+                                              selectedChannelImg =
+                                                  channelList[index]
+                                                      .channel_image!;
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context)
+                                                  .pushNamedAndRemoveUntil(
+                                                      "/home",
+                                                      (Route<dynamic> route) =>
+                                                          false);
+                                            });
+                                          },
                                         ),
-                                        onTap: () {
-                                          setState(() {
-                                            selectedChannelName =
-                                                channelList[index].channelId!;
-                                            selectedChannelImg =
-                                                channelList[index]
-                                                    .channel_image!;
-                                            Navigator.of(context).pop();
-                                            Navigator.of(context)
-                                                .pushNamedAndRemoveUntil(
-                                                    "/home",
-                                                    (Route<dynamic> route) =>
-                                                        false);
-                                          });
-                                        },
-                                      ),
-                                    )),
-                              ],
+                                      )),
+                                ],
+                              ),
                             )),
                       ],
                     ),
@@ -2184,6 +2736,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   getLiveTv() {
+    String width = (MediaQuery.of(context).size.width * 2.7).toString();
     if (isliveNews[0][TYPE] == "url_youtube") {
       _yc = YoutubePlayerController(
         initialVideoId: YoutubePlayer.convertUrlToId(isliveNews[0]["url"])!,
@@ -2198,6 +2751,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
               VideoPlayerController.network(isliveNews[0]["url"]),
           autoPlay: false);
     }
+    print(isliveNews[0]["url"]);
     return Padding(
       padding: const EdgeInsets.only(top: 0),
       child: Container(
@@ -2224,7 +2778,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ),
             Padding(
               padding: EdgeInsetsDirectional.only(
-                  start: 3.0, end: 3.0, top: 5.0, bottom: 10.0),
+                  start: 0.0, end: 0.0, top: 5.0, bottom: 10.0),
               child: _isNetworkAvail
                   ? isliveNews[0][TYPE] == "url_youtube"
                       ? YoutubePlayerBuilder(
@@ -2234,7 +2788,17 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           builder: (context, player) {
                             return Center(child: player);
                           })
-                      : FlickVideoPlayer(flickManager: flickManager!)
+                      : Container(
+                          color: Colors.transparent,
+                          height: 205,
+                          child: WebView(
+                            onProgress: (progress) {},
+                            initialUrl: Uri.dataFromString(
+                                    '<html><body><iframe height="600" width="$width" src="${isliveNews[0]["url"]}" allow="autoplay"></iframe></body></html>',
+                                    mimeType: 'text/html')
+                                .toString(),
+                            javascriptMode: JavascriptMode.unrestricted,
+                          ))
                   : Center(child: Text(getTranslated(context, 'internetmsg')!)),
             ),
           ],
@@ -2242,6 +2806,58 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
+  // getLiveTv() {
+  //   // flickManager = FlickManager(
+  //   //     videoPlayerController:
+  //   //         VideoPlayerController.network('https://vimeo.com/event/1756042'),
+  //   // autoPlay: false);
+  //   // return Padding(
+  //   //   padding: const EdgeInsets.only(top: 0),
+  //   //   child: Container(
+  //   //     // padding: EdgeInsets.all(8),
+  //   //     // decoration: BoxDecoration(
+  //   //     //   borderRadius: BorderRadius.circular(10),
+  //   //     //   color: Colors.grey.withOpacity(0.1),
+  //   //     // ),
+  //   //     child: Column(
+  //   //       crossAxisAlignment: CrossAxisAlignment.end,
+  //   //       children: [
+  //   //         GestureDetector(
+  //   //           onTap: () {
+  //   //             setState(() {
+  //   //               showLiveTv = false;
+  //   //             });
+  //   //           },
+  //   //           child: Container(
+  //   //             child: Icon(
+  //   //               Icons.cancel,
+  //   //               color: Colors.grey,
+  //   //             ),
+  //   //           ),
+  //   //         ),
+  //   //         Padding(
+  //   //           padding: EdgeInsetsDirectional.only(
+  //   //               start: 3.0, end: 3.0, top: 5.0, bottom: 10.0),
+  //   //           child: _isNetworkAvail
+  //   //               ? FlickVideoPlayer(flickManager: flickManager!)
+  //   //               : Center(child: Text(getTranslated(context, 'internetmsg')!)),
+  //   //         ),
+  //   //       ],
+  //   //     ),
+  //   //   ),
+  //   // );
+  //   String width = (MediaQuery.of(context).size.width * 2.7).toString();
+  //   return Container(
+  //       color: Colors.transparent,
+  //       height: 232,
+  //       child: WebView(
+  //         initialUrl: Uri.dataFromString(
+  //                 '<html><body><iframe height="600" width="${width}" src="https://metrotvnetwork.livebox.co.in/livebox/player/?chnl=metromumbai" allow="autoplay"></iframe></body></html>',
+  //                 mimeType: 'text/html')
+  //             .toString(),
+  //         javascriptMode: JavascriptMode.unrestricted,
+  //       ));
+  // }
 
   Widget liveWithSearchView() {
     return Padding(
@@ -2542,7 +3158,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                  padding: EdgeInsetsDirectional.only(start: 8.0),
+                  padding: EdgeInsetsDirectional.only(start: 0.0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.red,
@@ -2571,7 +3187,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                           .fontColor
                                           .withOpacity(0.8))))
                       : SizedBox(
-                          height: 250.0,
+                          height: 250.0 * (9 / 16) + 75,
                           child: ListView.builder(
                             physics: AlwaysScrollableScrollPhysics(),
                             scrollDirection: Axis.horizontal,
@@ -3528,11 +4144,14 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Stack(
           children: <Widget>[
             ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
                 child: FadeInImage.assetNetwork(
                   image: breakingNewsList[index].image!,
-                  height: 250.0,
-                  width: 193.0,
+                  height: 250.0 * (9 / 16),
+                  width: 250.0,
                   fit: BoxFit.cover,
                   placeholder: placeHolder,
                   imageErrorBuilder: (context, error, stackTrace) {
@@ -3600,6 +4219,7 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     isFav: false,
                     isDetails: false,
                     news1: tempBreak,
+
                     // updateHome: updateHome,
                   )));
         },

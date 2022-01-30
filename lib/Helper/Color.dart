@@ -23,7 +23,7 @@ extension colors on ColorScheme {
   static const Color bgColor = Color(0xffEEEEEE);
   static const Color templightColor = Color(0xffE5E5E5);
   static const Color tempBorderColor = Color(0xff6B6B6B);
-  static const Color tempdarkColor = Color(0xff5A5A5A);
+  static const Color tempdarkColor = Colors.black;
   static const Color darkColor1 = Color(0xff3D3D3D);
   static const Color tempfontColor1 = Color(0xff7F7F7F);
 

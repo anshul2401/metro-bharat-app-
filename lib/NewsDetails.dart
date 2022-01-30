@@ -1355,6 +1355,7 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
     return widget.isDetails!
         ? widget.model!.categoryName == 'Video'
             ? Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Column(children: [
@@ -1363,8 +1364,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                         widget.model!.like == "1"
                             ? "assets/images/s_like_filled.png"
                             : "assets/images/s_like_unfilled.png",
-                        height: 26.0,
-                        width: 26.0,
+                        height: 30.0,
+                        width: 30.0,
                       ),
                       onTap: () async {
                         if (CUR_USERID != "") {
@@ -1416,13 +1417,63 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                     padding: EdgeInsetsDirectional.only(start: 9.0),
                     child: InkWell(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            "assets/images/s_comment.png",
+                            height: 30.0,
+                            width: 30.0,
+                          ),
+                          Padding(
+                              padding: EdgeInsetsDirectional.only(top: 4.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    widget.model!.total_comment! + ' ',
+                                    style: Theme.of(this.context)
+                                        .textTheme
+                                        .caption
+                                        ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .fontColor
+                                                .withOpacity(0.8),
+                                            fontSize: 9.0),
+                                  ),
+                                  Text(
+                                    getTranslated(context, 'com_lbl')!,
+                                    style: Theme.of(this.context)
+                                        .textTheme
+                                        .caption
+                                        ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .fontColor
+                                                .withOpacity(0.8),
+                                            fontSize: 9.0),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      ),
+                      onTap: () {
+                        setState(() {
+                          comEnabled = true;
+                        });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsetsDirectional.only(start: 9.0),
+                    child: InkWell(
+                      child: Column(
                         children: [
                           Image.asset(
                             _isBookmark
                                 ? "assets/images/s_save.png"
                                 : "assets/images/s_save_unfilled.png",
-                            height: 26,
-                            width: 26,
+                            height: 30,
+                            width: 30,
                           ),
                           Padding(
                               padding: EdgeInsetsDirectional.only(top: 4.0),
@@ -1467,45 +1518,11 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                     padding: EdgeInsetsDirectional.only(start: 9.0),
                     child: InkWell(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            "assets/images/s_comment.png",
-                            height: 26.0,
-                            width: 26.0,
-                          ),
-                          Padding(
-                              padding: EdgeInsetsDirectional.only(top: 4.0),
-                              child: Text(
-                                getTranslated(context, 'com_lbl')!,
-                                style: Theme.of(this.context)
-                                    .textTheme
-                                    .caption
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .fontColor
-                                            .withOpacity(0.8),
-                                        fontSize: 9.0),
-                              ))
-                        ],
-                      ),
-                      onTap: () {
-                        setState(() {
-                          comEnabled = true;
-                        });
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(start: 9.0),
-                    child: InkWell(
-                      child: Column(
                         children: [
                           Image.asset(
                             "assets/images/s_share.png",
-                            height: 26.0,
-                            width: 26.0,
+                            height: 30.0,
+                            width: 30.0,
                           ),
                           Padding(
                               padding: EdgeInsetsDirectional.only(top: 4.0),
@@ -1550,8 +1567,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                             widget.model!.like == "1"
                                 ? "assets/images/s_like_filled.png"
                                 : "assets/images/s_like_unfilled.png",
-                            height: 26.0,
-                            width: 26.0,
+                            height: 30.0,
+                            width: 30.0,
                           ),
                           onTap: () async {
                             if (CUR_USERID != "") {
@@ -1609,22 +1626,38 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                         children: [
                           Image.asset(
                             "assets/images/s_comment.png",
-                            height: 26.0,
-                            width: 26.0,
+                            height: 30.0,
+                            width: 30.0,
                           ),
                           Padding(
                               padding: EdgeInsetsDirectional.only(top: 4.0),
-                              child: Text(
-                                getTranslated(context, 'com_lbl')!,
-                                style: Theme.of(this.context)
-                                    .textTheme
-                                    .caption
-                                    ?.copyWith(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .fontColor
-                                            .withOpacity(0.8),
-                                        fontSize: 9.0),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    widget.model!.total_comment! + " ",
+                                    style: Theme.of(this.context)
+                                        .textTheme
+                                        .caption
+                                        ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .fontColor
+                                                .withOpacity(0.8),
+                                            fontSize: 9.0),
+                                  ),
+                                  Text(
+                                    getTranslated(context, 'com_lbl')!,
+                                    style: Theme.of(this.context)
+                                        .textTheme
+                                        .caption
+                                        ?.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .fontColor
+                                                .withOpacity(0.8),
+                                            fontSize: 9.0),
+                                  ),
+                                ],
                               ))
                         ],
                       ),
@@ -1643,8 +1676,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                             Image.asset(
                               "assets/images/s_sound.png",
 
-                              height: 26.0,
-                              width: 26.0,
+                              height: 30.0,
+                              width: 30.0,
                               // color: isPlaying ? colors.primary : Colors.red,
                             ),
                             Padding(
@@ -1686,8 +1719,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                             _isBookmark
                                 ? "assets/images/s_save.png"
                                 : "assets/images/s_save_unfilled.png",
-                            height: 26,
-                            width: 26,
+                            height: 30,
+                            width: 30,
                           ),
                           Padding(
                               padding: EdgeInsetsDirectional.only(top: 4.0),
@@ -1735,8 +1768,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                           children: [
                             Image.asset(
                               "assets/images/s_increase font.png",
-                              height: 26.0,
-                              width: 26.0,
+                              height: 30.0,
+                              width: 30.0,
                             ),
                             Padding(
                                 padding: EdgeInsetsDirectional.only(top: 4.0),
@@ -1765,8 +1798,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                         children: [
                           Image.asset(
                             "assets/images/s_share.png",
-                            height: 26.0,
-                            width: 26.0,
+                            height: 30.0,
+                            width: 30.0,
                           ),
                           Padding(
                               padding: EdgeInsetsDirectional.only(top: 4.0),
@@ -1813,12 +1846,12 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
         ? !isReply
             ? !comEnabled
                 ? Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
+                    padding: const EdgeInsets.only(top: 8.0, bottom: 8),
                     child: Container(
                       // color: Colors.white,
                       child: Padding(
                         padding:
-                            const EdgeInsets.only(top: 8.0, bottom: 8, left: 8),
+                            const EdgeInsets.only(top: 8.0, bottom: 0, left: 0),
                         child: Row(
                           children: [
                             CircleAvatar(
@@ -1853,6 +1886,9 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                                               fontSize: 14.0,
                                               fontWeight: FontWeight.bold),
                                     ),
+                                  ),
+                                  SizedBox(
+                                    height: 5,
                                   ),
                                   Padding(
                                     padding:
@@ -2040,6 +2076,7 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                       ? widget.model!.title!
                       : widget.model1!.title!,
                   style: Theme.of(this.context).textTheme.subtitle1?.copyWith(
+                      height: 1.2,
                       color: Theme.of(context).colorScheme.darkColor,
                       fontWeight: FontWeight.bold),
                 ),
@@ -2107,17 +2144,16 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                   //   topLeft: Radius.circular(25),
                   //   topRight: Radius.circular(25),
                   // ),
-                  color: isDark! ? colors.tempdarkColor : colors.bgColor),
+                  color: isDark! ? colors.tempdarkColor : Colors.white),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // allRowBtn(),
 
-                    tagView(),
                     allRowBtn(),
                     Divider(
-                      thickness: 1,
-                      color: Colors.black,
+                      thickness: 0.5,
+                      color: Colors.grey,
                     ),
                     titleView(),
                     widget.isDetails! ? dateView() : Container(),
@@ -2140,7 +2176,10 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                     //                 fontWeight: FontWeight.w600))
                     //     : Container(),
                     // widget.isDetails! ? commentView() : Container(),
-
+                    tagView(),
+                    SizedBox(
+                      height: 10,
+                    ),
                     adList.isEmpty
                         ? Container()
                         : !isReply
@@ -2170,7 +2209,7 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                     widget.isDetails!
                         ? widget.model!.categoryName == 'Video'
                             ? viewRelatedContentForVideo()
-                            : viewRelatedContent()
+                            : viewRelatedContentForVideo()
                         : viewRelatedContent()
                   ]),
             )));
@@ -2186,7 +2225,7 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                   EdgeInsetsDirectional.only(top: 5.0, start: 10.0, end: 10.0),
               width: deviceWidth,
               decoration: BoxDecoration(
-                  color: isDark! ? colors.tempdarkColor : colors.bgColor),
+                  color: isDark! ? colors.tempdarkColor : Colors.white),
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -2198,12 +2237,12 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
 
                     Divider(
                       thickness: 0.7,
-                      color: Colors.black,
+                      color: Colors.grey,
                     ),
                     allRowBtn(),
                     Divider(
                       thickness: 0.7,
-                      color: Colors.black,
+                      color: Colors.grey,
                     ),
 
                     descView(),
@@ -2425,23 +2464,29 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                     : newsList.length != 0
                         ? Padding(
                             padding: EdgeInsetsDirectional.only(
-                              top: 5.0,
+                              top: 15.0,
                             ),
-                            child: Column(children: [
-                              Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Text('Related Video',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle1
-                                          ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .fontColor,
-                                              fontWeight: FontWeight.w600))),
-                              SizedBox(
-                                  height: 250,
-                                  child: ListView.builder(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Text(
+                                          widget.model!.categoryName == 'Video'
+                                              ? 'Related Video'
+                                              : 'Related News',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle1
+                                              ?.copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .fontColor,
+                                                  fontWeight:
+                                                      FontWeight.w600))),
+                                  ListView.builder(
+                                    shrinkWrap: true,
                                     itemCount: (offsetNews < totalNews)
                                         ? newsList.length + 1
                                         : newsList.length,
@@ -2455,8 +2500,8 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                                                   CircularProgressIndicator())
                                           : newsItemForVideo(index);
                                     },
-                                  ))
-                            ]))
+                                  )
+                                ]))
                         : Container()
                 : Container()
             : Container()
@@ -2561,37 +2606,47 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
     DateTime time1 = DateTime.parse(newsList[index].date!);
 
     return Padding(
-      padding:
-          EdgeInsetsDirectional.only(top: 10.0, start: index == 0 ? 0 : 6.0),
+      padding: EdgeInsetsDirectional.only(
+        top: 0.0,
+        start: index == 0 ? 0 : 0.0,
+      ),
       child: InkWell(
         child: Stack(
           children: <Widget>[
             Stack(alignment: Alignment.center, children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(0.0),
-                  child: FadeInImage.assetNetwork(
-                    image: newsList[index].image!,
-                    height: 99.0,
-                    width: 99.0,
-                    fit: BoxFit.cover,
-                    placeholder: placeHolder,
-                    imageErrorBuilder: (context, error, stackTrace) {
-                      return errorWidget(250, 193);
-                    },
-                  )),
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(50.0),
-                  child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                          height: 35,
-                          width: 35,
-                          // padding: EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Center(child: Icon(Icons.play_arrow))))),
+              Container(
+                color: Colors.white,
+                height: 99,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(0.0),
+                    child: FadeInImage.assetNetwork(
+                      image: newsList[index].image!,
+                      height: 99.0 * (9 / 16),
+                      width: 99.0,
+                      fit: BoxFit.fitWidth,
+                      placeholder: placeHolder,
+                      imageErrorBuilder: (context, error, stackTrace) {
+                        return errorWidget(250, 193);
+                      },
+                    )),
+              ),
+              widget.model!.categoryName == 'Video'
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(50.0),
+                      child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Container(
+                              height: 30,
+                              width: 30,
+                              // padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Center(child: Icon(Icons.play_arrow)))))
+                  : Container(
+                      width: 0,
+                    ),
             ]),
             Positioned.directional(
                 textDirection: Directionality.of(context),
@@ -2602,41 +2657,103 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                 child: ClipRRect(
                     // borderRadius: BorderRadius.circular(0.0),
                     child: Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(0.0),
-                    color: colors.tempboxColor.withOpacity(0.85),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        convertToAgo(time1, 0)!,
-                        style: Theme.of(context).textTheme.caption?.copyWith(
-                            color: colors.tempfontColor1, fontSize: 10.0),
-                      ),
-                      Padding(
-                          padding: EdgeInsets.only(top: 4.0),
-                          child: Text(
-                            newsList[index].title!,
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle2
-                                ?.copyWith(
-                                    color:
-                                        colors.tempfontColor1.withOpacity(0.9),
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12.5,
-                                    height: 1.0),
-                            maxLines: 3,
-                            softWrap: true,
-                            overflow: TextOverflow.ellipsis,
-                          )),
-                    ],
-                  ),
-                ))),
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(0.0),
+                          color: colors.tempboxColor.withOpacity(0.85),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              convertToAgo(time1, 0)!,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  ?.copyWith(
+                                      color: colors.tempfontColor1,
+                                      fontSize: 10.0),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.only(top: 4.0),
+                                child: Text(
+                                  newsList[index].title!,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle2
+                                      ?.copyWith(
+                                          color: colors.tempfontColor1
+                                              .withOpacity(0.9),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 12.5,
+                                          height: 1.0),
+                                  maxLines: 3,
+                                  softWrap: true,
+                                  overflow: TextOverflow.ellipsis,
+                                )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 0.0),
+                                  child: Text(
+                                    '2 Min' + ' Read',
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 0.0),
+                                  child: Text(
+                                    newsList[index].totalLikes == null
+                                        ? '0 Likes'
+                                        : newsList[index].totalLikes! +
+                                            ' Likes',
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 0.0),
+                                  child: Text(
+                                    newsList[index].counter == null
+                                        ? '0 views'
+                                        : newsList[index].counter! + ' Views',
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 0.0),
+                                  child: Text(
+                                    newsList[index].total_comment == null
+                                        ? '0 comments'
+                                        : newsList[index].total_comment! +
+                                            ' Comments',
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                        //here
+
+                        ))),
           ],
         ),
         onTap: () {
@@ -2746,18 +2863,38 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
       //     ]),
       //   ),
       // ),
+      backgroundColor: Colors.white,
+      bottomNavigationBar: widget.isDetails!
+          ? widget.model!.categoryName == 'Video'
+              ? Container(
+                  height: 0,
+                )
+              : BottomAppBar(
+                  child: Container(
+                      alignment: Alignment.center,
+                      height: 55,
+                      child: Padding(
+                        padding: EdgeInsets.all(5),
+                        child: allRowBtn(),
+                      )),
+                )
+          : Container(
+              height: 0,
+            ),
+
       body: Container(
           width: deviceWidth,
           child: SingleChildScrollView(
               // primary: false,
               // physics: ClampingScrollPhysics(),
               child: Stack(children: <Widget>[
-            widget.model != null
-                ? widget.model!.categoryName == 'Video'
-                    ? viewVideo()
+            widget.isDetails!
+                ? widget.model != null
+                    ? widget.model!.categoryName == 'Video'
+                        ? viewVideo()
+                        : imageView()
                     : imageView()
                 : imageView(),
-
             imageSliderDot(),
             backBtn(),
             // videoBtn(),

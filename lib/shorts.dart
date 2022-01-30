@@ -1,14 +1,21 @@
+// ignore_for_file: avoid_print
+
+import 'dart:convert';
+
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:news_app/EventVideo.dart';
 import 'package:news_app/Helper/Color.dart';
+import 'package:news_app/Helper/Constant.dart';
 import 'package:news_app/Helper/Session.dart';
+import 'package:news_app/Helper/String.dart';
 import 'package:news_app/Model/Shorts.dart';
 
 import 'package:tiktoklikescroller/tiktoklikescroller.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:http/http.dart' as http;
 
 import 'Helper/colors.dart';
 
@@ -21,30 +28,39 @@ class ShortsPage extends StatefulWidget {
 
 class _ShortsPageState extends State<ShortsPage> {
   List<ShortsModel> shorts = [
-    ShortsModel(
-      id: '0',
-      contentType: 'video_upload',
-      contentValue:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
-    ),
-    ShortsModel(
-      id: '1',
-      contentType: 'video_upload',
-      contentValue:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-    ),
-    ShortsModel(
-      id: '2',
-      contentType: 'video_upload',
-      contentValue:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
-    ),
-    ShortsModel(
-      id: '3',
-      contentType: 'video_upload',
-      contentValue:
-          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-    ),
+    // ShortsModel(
+    //   id: '0',
+    //   contentType: 'video_upload',
+    //   contentValue:
+    //       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+    //   title: 'This is a test',
+    //   disc: 'The best music video u will come across',
+    // ),
+    // ShortsModel(
+    //   id: '1',
+    //   contentType: 'video_upload',
+    //   contentValue:
+    //       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    //   title: 'This is a test',
+    //   disc:
+    //       'The best music video u will come across The best music video u will come across The best music video u will come across ',
+    // ),
+    // ShortsModel(
+    //   id: '2',
+    //   contentType: 'video_upload',
+    //   contentValue:
+    //       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+    //   title: 'This is a test',
+    //   disc: 'The best music video u will come across',
+    // ),
+    // ShortsModel(
+    //   id: '3',
+    //   contentType: 'video_upload',
+    //   contentValue:
+    //       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+    //   title: 'This is a test',
+    //   disc: 'The best music video u will come across',
+    // ),
     // ShortsModel(
     //   id: '2',
     //   contentType: 'video_youtube',
@@ -62,34 +78,79 @@ class _ShortsPageState extends State<ShortsPage> {
   FlickManager? flickManager1;
   YoutubePlayerController? _yc;
   bool _isNetworkAvail = true;
+  List<ShortsModel> tempShortList = [];
+  bool _isLoading = false;
+  callApi() async {
+    await _getShorts();
+  }
+
+  Future<void> _getShorts() async {
+    _isNetworkAvail = await isNetworkAvailable();
+    if (_isNetworkAvail) {
+      var param = {
+        ACCESS_KEY: access_key,
+        USER_ID: '0',
+      };
+
+      http.Response response = await http
+          .post(Uri.parse(baseUrl + 'get_video'), body: param, headers: headers)
+          .timeout(Duration(seconds: timeOut));
+
+      var getdata = json.decode(response.body);
+
+      String error = getdata["error"];
+      print(getdata);
+      if (error == "false") {
+        var data = getdata["data"];
+
+        tempShortList =
+            (data as List).map((data) => ShortsModel.fromJson(data)).toList();
+        shorts.addAll(tempShortList);
+        shorts.forEach((element) {
+          print(element.contentValue);
+          if (element != "" || element != null) {
+            if (element.contentType == "video_upload") {
+              flickManager.add(FlickManager(
+                videoPlayerController:
+                    VideoPlayerController.network(element.contentValue!),
+                autoPlay: true,
+              ));
+            }
+          }
+        });
+
+        // for (int i = 0; i < data.length; i++) {
+        //   catId = data[i]["category_id"];
+        // }
+        // setState(() {
+        //   selectedChoices = catId == "" ? catId!.split('') : catId!.split(',');
+        // });
+      }
+    } else {
+      // setState(() {
+      //   _isLoading = false;
+      // });
+      setSnackbar(getTranslated(context, 'internetmsg')!);
+    }
+  }
+
+  setSnackbar(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
+      content: new Text(
+        msg,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Theme.of(context).colorScheme.fontColor),
+      ),
+      backgroundColor: isDark! ? colors.tempdarkColor : colors.bgColor,
+      elevation: 1.0,
+    ));
+  }
 
   @override
   void initState() {
     super.initState();
     checkNet();
-    shorts.forEach((element) {
-      if (element != "" || element != null) {
-        if (element.contentType == "video_upload") {
-          flickManager.add(FlickManager(
-              videoPlayerController:
-                  VideoPlayerController.network(element.contentValue!),
-              autoPlay: false));
-        } else if (shorts[0].contentType == "video_youtube") {
-          _yc = YoutubePlayerController(
-            initialVideoId:
-                YoutubePlayer.convertUrlToId(shorts[0].contentValue!)!,
-            flags: const YoutubePlayerFlags(
-              autoPlay: false,
-            ),
-          );
-        } else if (shorts[0].contentType == "video_other") {
-          flickManager1 = FlickManager(
-              videoPlayerController:
-                  VideoPlayerController.network(shorts[0].contentValue!),
-              autoPlay: false);
-        }
-      }
-    });
+    callApi();
   }
 
   checkNet() async {
@@ -147,26 +208,45 @@ class _ShortsPageState extends State<ShortsPage> {
 
   //news video link set
   viewVideo(ShortsModel shorts, String index) {
-    return shorts.contentType == "video_upload"
-        ? Container(
-            alignment: Alignment.center,
-            child:
-                FlickVideoPlayer(flickManager: flickManager[int.parse(index)]))
-        : shorts.contentType == "video_youtube"
-            ? YoutubePlayerBuilder(
-                player: YoutubePlayer(
-                  controller: _yc!,
-                  showVideoProgressIndicator: true,
-                  progressIndicatorColor: Colors.red,
+    return Stack(children: [
+      Container(
+          alignment: Alignment.center,
+          child:
+              FlickVideoPlayer(flickManager: flickManager[int.parse(index)])),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20, left: 20),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Text(
+                shorts.title!,
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 100, left: 20),
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Text(
+                    shorts.disc!,
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  ),
                 ),
-                builder: (context, player) {
-                  return Center(child: player);
-                })
-            : shorts.contentType == "video_other"
-                ? Container(
-                    alignment: Alignment.center,
-                    child: FlickVideoPlayer(flickManager: flickManager1!))
-                : Container();
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 100, right: 20),
+                child: Icon(Icons.thumb_up_sharp),
+              )
+            ],
+          ),
+        ],
+      ),
+    ]);
   }
 
   @override

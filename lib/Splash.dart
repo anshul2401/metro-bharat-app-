@@ -10,6 +10,7 @@ import 'package:http/http.dart';
 import 'package:news_app/Helper/Color.dart';
 import 'package:news_app/Helper/Constant.dart';
 import 'package:news_app/Helper/String.dart';
+import 'package:news_app/ad_splash.dart';
 import 'package:news_app/select_channel.dart';
 
 import 'Helper/Session.dart';
@@ -145,7 +146,9 @@ class SplashState extends State<Splash> with TickerProviderStateMixin {
       //     MaterialPageRoute<void>(
       //         builder: (BuildContext context) => const SelectChannel()),
       //     (route) => false);
-      Navigator.pushReplacementNamed(context, "/home");
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => AdSplashPage()));
+      // Navigator.pushReplacementNamed(context, "/home");
     } else {
       Navigator.pushReplacement(
           context,

@@ -65,6 +65,7 @@ class _menus1State extends State<menus1> {
                 builder: (_) => HomePage(
                       isLiveTvPage: true,
                       isEventPage: false,
+                      isShortPage: false,
                     )));
           }),
           SizedBox(
@@ -101,8 +102,11 @@ class _menus1State extends State<menus1> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        HomePage(isLiveTvPage: false, isEventPage: false)));
+                    builder: (BuildContext context) => HomePage(
+                          isLiveTvPage: false,
+                          isEventPage: false,
+                          isShortPage: false,
+                        )));
           }),
           SizedBox(
             height: 2 * AppSizeConfig.heightMultiplier!,
