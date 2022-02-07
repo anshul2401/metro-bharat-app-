@@ -40,6 +40,9 @@ import 'package:news_app/SubHome2.dart';
 import 'package:news_app/drawer_mainpage.dart';
 import 'package:news_app/event_details.dart';
 import 'package:news_app/live_tv.dart';
+import 'package:news_app/player/src/source/video_loading_style.dart';
+import 'package:news_app/player/src/source/video_style.dart';
+import 'package:news_app/player/src/video.dart';
 import 'package:news_app/search_page.dart';
 import 'package:news_app/shorts.dart';
 import 'package:provider/provider.dart';
@@ -358,86 +361,90 @@ class HomeState extends State<Home> {
       //     ],
       //   ),
       // ),
-      bottomNavigationBar: Stack(
-        children: [
-          Container(
-            height: 50,
-            child: Row(
+      bottomNavigationBar: fullscreen
+          ? Container(
+              height: 0,
+            )
+          : Stack(
               children: [
-                Expanded(
-                    child: Center(
-                  child: SizedBox(
-                    key: keyBottomNavigation1,
-                    height: 40,
-                    width: 40,
-                  ),
-                )),
-                Expanded(
-                    child: Center(
-                  child: SizedBox(
-                    key: keyBottomNavigation2,
-                    height: 40,
-                    width: 40,
-                  ),
-                )),
-                Expanded(
-                  child: Center(
-                    child: SizedBox(
-                      key: keyBottomNavigation3,
-                      height: 40,
-                      width: 40,
-                    ),
+                Container(
+                  height: 50,
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: Center(
+                        child: SizedBox(
+                          key: keyBottomNavigation1,
+                          height: 40,
+                          width: 40,
+                        ),
+                      )),
+                      Expanded(
+                          child: Center(
+                        child: SizedBox(
+                          key: keyBottomNavigation2,
+                          height: 40,
+                          width: 40,
+                        ),
+                      )),
+                      Expanded(
+                        child: Center(
+                          child: SizedBox(
+                            key: keyBottomNavigation3,
+                            height: 40,
+                            width: 40,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: SizedBox(
+                            key: keyBottomNavigation4,
+                            height: 40,
+                            width: 40,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: Center(
-                    child: SizedBox(
-                      key: keyBottomNavigation4,
-                      height: 40,
-                      width: 40,
+                BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  unselectedItemColor: Colors.grey,
+                  items: const <BottomNavigationBarItem>[
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.home,
+                      ),
+                      title: Text(
+                        'Home',
+                      ),
                     ),
-                  ),
+                    BottomNavigationBarItem(
+                      icon: Icon(
+                        Icons.tv,
+                      ),
+                      title: Text(
+                        'Live T.V.',
+                      ),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.notifications),
+                      title: Text('Shorts'),
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.event),
+                      title: Text('Events'),
+                    ),
+                  ],
+                  currentIndex: _selectedIndex,
+                  selectedItemColor: Colors.black,
+                  iconSize: 20,
+                  onTap: _onItemTapped,
+                  elevation: 5,
                 ),
               ],
             ),
-          ),
-          BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            unselectedItemColor: Colors.grey,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home,
-                ),
-                title: Text(
-                  'Home',
-                ),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.tv,
-                ),
-                title: Text(
-                  'Live T.V.',
-                ),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.notifications),
-                title: Text('Shorts'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.event),
-                title: Text('Events'),
-              ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: Colors.black,
-            iconSize: 20,
-            onTap: _onItemTapped,
-            elevation: 5,
-          ),
-        ],
-      ),
       body: fragments?[_selectedIndex],
     );
   }
@@ -552,6 +559,8 @@ class HomeState extends State<Home> {
         var data = getdata["data"];
         List<News> news = [];
         news = (data as List).map((data) => new News.fromJson(data)).toList();
+        // selectedChannelName = news[0].channel_name!;
+
         Navigator.of(context).push(MaterialPageRoute(
             builder: (BuildContext context) => NewsDetails(
                   model: news[0],
@@ -561,6 +570,7 @@ class HomeState extends State<Home> {
                   isFav: false,
                   isDetails: true,
                   news: [],
+
                   // updateHome: updateParent,
                 )));
       }
@@ -1787,40 +1797,32 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   )
                 : widget.isLiveTvPage
                     ? Scaffold(
-                        appBar: AppBar(
-                          title: GestureDetector(
-                            onTap: () {
-                              showMe(context);
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 70,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 0, left: 10),
-                                    child: Image.network(selectedChannelImg),
+                        appBar: fullscreen
+                            ? null
+                            : AppBar(
+                                title: GestureDetector(
+                                  onTap: () {
+                                    showMe(context);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 70,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 0, left: 10),
+                                          child:
+                                              Image.network(selectedChannelImg),
+                                        ),
+                                      ),
+                                      Icon(Icons.arrow_drop_down),
+                                    ],
                                   ),
                                 ),
-                                Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
-                          actions: [
-                            // TODO: add here the search bar
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          FilterNetworkListPage(),
-                                    ));
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: IconButton(
-                                    onPressed: () {
+                                actions: [
+                                  // TODO: add here the search bar
+                                  GestureDetector(
+                                    onTap: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -1828,41 +1830,53 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 FilterNetworkListPage(),
                                           ));
                                     },
-                                    icon: Icon(
-                                      Icons.search_rounded,
-                                      size: 35,
-                                      color: Colors.white,
-                                    )),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Live(
-                                        liveNews: isliveNews,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FilterNetworkListPage(),
+                                                ));
+                                          },
+                                          icon: Icon(
+                                            Icons.search_rounded,
+                                            size: 35,
+                                            color: Colors.white,
+                                          )),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Live(
+                                              liveNews: isliveNews,
+                                            ),
+                                          ));
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.only(right: 20),
+                                      // decoration: BoxDecoration(
+                                      //   borderRadius: BorderRadius.circular(15),
+                                      //   color: Colors.red,
+                                      // ),
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [],
                                       ),
-                                    ));
-                              },
-                              child: Container(
-                                padding: EdgeInsets.only(right: 20),
-                                // decoration: BoxDecoration(
-                                //   borderRadius: BorderRadius.circular(15),
-                                //   color: Colors.red,
-                                // ),
-                                alignment: Alignment.center,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [],
-                                ),
+                                    ),
+                                  ),
+                                ],
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
                               ),
-                            ),
-                          ],
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                        ),
                         drawer: Container(
                           width: MediaQuery.of(context).size.width * 1,
                           child: Drawer(
@@ -1874,40 +1888,32 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                         ),
                       )
                     : Scaffold(
-                        appBar: AppBar(
-                          title: GestureDetector(
-                            onTap: () {
-                              showMe(context);
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 70,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 0, left: 10),
-                                    child: Image.network(selectedChannelImg),
+                        appBar: fullscreen
+                            ? null
+                            : AppBar(
+                                title: GestureDetector(
+                                  onTap: () {
+                                    showMe(context);
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 70,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 0, left: 10),
+                                          child:
+                                              Image.network(selectedChannelImg),
+                                        ),
+                                      ),
+                                      Icon(Icons.arrow_drop_down),
+                                    ],
                                   ),
                                 ),
-                                Icon(Icons.arrow_drop_down),
-                              ],
-                            ),
-                          ),
-                          actions: [
-                            // TODO: add here the search bar
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          FilterNetworkListPage(),
-                                    ));
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: IconButton(
-                                    onPressed: () {
+                                actions: [
+                                  // TODO: add here the search bar
+                                  GestureDetector(
+                                    onTap: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -1915,62 +1921,74 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                 FilterNetworkListPage(),
                                           ));
                                     },
-                                    icon: Icon(
-                                      Icons.search_rounded,
-                                      size: 35,
-                                      color: Colors.white,
-                                    )),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                // Navigator.push(
-                                //     context,
-                                //     MaterialPageRoute(
-                                //       builder: (context) => Live(
-                                //         liveNews: isliveNews,
-                                //       ),
-                                //     ));
-                                setState(() {
-                                  showLiveTv = true;
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.only(right: 20),
-                                // decoration: BoxDecoration(
-                                //   borderRadius: BorderRadius.circular(15),
-                                //   color: Colors.red,
-                                // ),
-                                alignment: Alignment.center,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset(
-                                      "assets/images/live_news.svg",
-                                      semanticsLabel: 'live news',
-                                      height: 21.0,
-                                      width: 21.0,
-                                      color: Colors.white,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      FilterNetworkListPage(),
+                                                ));
+                                          },
+                                          icon: Icon(
+                                            Icons.search_rounded,
+                                            size: 35,
+                                            color: Colors.white,
+                                          )),
                                     ),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text(
-                                      'Live T.V.',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //       builder: (context) => Live(
+                                      //         liveNews: isliveNews,
+                                      //       ),
+                                      //     ));
+                                      setState(() {
+                                        showLiveTv = true;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.only(right: 20),
+                                      // decoration: BoxDecoration(
+                                      //   borderRadius: BorderRadius.circular(15),
+                                      //   color: Colors.red,
+                                      // ),
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            "assets/images/live_news.svg",
+                                            semanticsLabel: 'live news',
+                                            height: 21.0,
+                                            width: 21.0,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Text(
+                                            'Live T.V.',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
                               ),
-                            ),
-                          ],
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                        ),
                         drawer: Container(
                           width: MediaQuery.of(context).size.width * 0.9,
                           child: Drawer(
@@ -2763,22 +2781,28 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  showLiveTv = false;
-                });
-              },
-              child: Container(
-                child: Icon(
-                  Icons.cancel,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
+            fullscreen
+                ? Container(
+                    height: 0,
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        showLiveTv = false;
+                      });
+                    },
+                    child: Container(
+                      child: Icon(
+                        Icons.cancel,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
             Padding(
-              padding: EdgeInsetsDirectional.only(
-                  start: 0.0, end: 0.0, top: 5.0, bottom: 10.0),
+              padding: fullscreen
+                  ? EdgeInsets.zero
+                  : EdgeInsetsDirectional.only(
+                      start: 0.0, end: 0.0, top: 5.0, bottom: 10.0),
               child: _isNetworkAvail
                   ? isliveNews[0][TYPE] == "url_youtube"
                       ? YoutubePlayerBuilder(
@@ -2788,17 +2812,42 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           builder: (context, player) {
                             return Center(child: player);
                           })
-                      : Container(
-                          color: Colors.transparent,
-                          height: 205,
-                          child: WebView(
-                            onProgress: (progress) {},
-                            initialUrl: Uri.dataFromString(
-                                    '<html><body><iframe height="600" width="$width" src="${isliveNews[0]["url"]}" allow="autoplay"></iframe></body></html>',
-                                    mimeType: 'text/html')
-                                .toString(),
-                            javascriptMode: JavascriptMode.unrestricted,
-                          ))
+                      : Column(
+                          children: [
+                            YoYoPlayer(
+                              aspectRatio: 16 / 9,
+                              url:
+                                  // "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+                                  // "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+                                  // "https://player.vimeo.com/external/440218055.m3u8?s=7ec886b4db9c3a52e0e7f5f917ba7287685ef67f&oauth2_token_id=1360367101",
+                                  "https://metrotvnetwork.livebox.co.in/metromumbaihls/live.m3u8",
+                              videoStyle: VideoStyle(),
+                              videoLoadingStyle: VideoLoadingStyle(
+                                loading: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Image(
+                                        image: AssetImage(
+                                            'assets/images/logo.png'),
+                                        fit: BoxFit.fitHeight,
+                                        height: 50,
+                                      ),
+                                      Text("Loading video"),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              onFullScreen: (t) {
+                                setState(() {
+                                  fullscreen = t;
+                                });
+                              },
+                            ),
+                          ],
+                        )
                   : Center(child: Text(getTranslated(context, 'internetmsg')!)),
             ),
           ],
@@ -2806,6 +2855,78 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  // getLiveTv() {
+  //   String width = (MediaQuery.of(context).size.width * 2.7).toString();
+  //   if (isliveNews[0][TYPE] == "url_youtube") {
+  //     _yc = YoutubePlayerController(
+  //       initialVideoId: YoutubePlayer.convertUrlToId(isliveNews[0]["url"])!,
+  //       flags: YoutubePlayerFlags(
+  //         autoPlay: false,
+  //         isLive: true,
+  //       ),
+  //     );
+  //   } else {
+  //     flickManager = FlickManager(
+  //         videoPlayerController:
+  //             VideoPlayerController.network(isliveNews[0]["url"]),
+  //         autoPlay: false);
+  //   }
+  //   print(isliveNews[0]["url"]);
+  //   return Padding(
+  //     padding: const EdgeInsets.only(top: 0),
+  //     child: Container(
+  //       // padding: EdgeInsets.all(8),
+  //       // decoration: BoxDecoration(
+  //       //   borderRadius: BorderRadius.circular(10),
+  //       //   color: Colors.grey.withOpacity(0.1),
+  //       // ),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.end,
+  //         children: [
+  //           GestureDetector(
+  //             onTap: () {
+  //               setState(() {
+  //                 showLiveTv = false;
+  //               });
+  //             },
+  //             child: Container(
+  //               child: Icon(
+  //                 Icons.cancel,
+  //                 color: Colors.grey,
+  //               ),
+  //             ),
+  //           ),
+  //           Padding(
+  //             padding: EdgeInsetsDirectional.only(
+  //                 start: 0.0, end: 0.0, top: 5.0, bottom: 10.0),
+  //             child: _isNetworkAvail
+  //                 ? isliveNews[0][TYPE] == "url_youtube"
+  //                     ? YoutubePlayerBuilder(
+  //                         player: YoutubePlayer(
+  //                           controller: _yc!,
+  //                         ),
+  //                         builder: (context, player) {
+  //                           return Center(child: player);
+  //                         })
+  //                     : Container(
+  //                         color: Colors.transparent,
+  //                         height: 205,
+  //                         child: WebView(
+  //                           onProgress: (progress) {},
+  //                           initialUrl: Uri.dataFromString(
+  //                                   '<html><body><iframe height="600" width="$width" src="${isliveNews[0]["url"]}" allow="autoplay"></iframe></body></html>',
+  //                                   mimeType: 'text/html')
+  //                               .toString(),
+  //                           javascriptMode: JavascriptMode.unrestricted,
+  //                         ))
+  //                 : Center(child: Text(getTranslated(context, 'internetmsg')!)),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
   // getLiveTv() {
   //   // flickManager = FlickManager(
   //   //     videoPlayerController:

@@ -172,3 +172,4 @@ const String confpass_required = "Confirm Password is Required";
 const String confpass_not_match = "Confirm Password not match";
 const String mbl_required = 'Mobile number is Required';
 const String mbl_valid = 'Please enter a valid mobile number!';
+bool fullscreen = false;

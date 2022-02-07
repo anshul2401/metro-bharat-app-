@@ -1846,7 +1846,7 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
         ? !isReply
             ? !comEnabled
                 ? Padding(
-                    padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+                    padding: const EdgeInsets.only(top: 5.0, bottom: 3),
                     child: Container(
                       // color: Colors.white,
                       child: Padding(
@@ -2149,12 +2149,15 @@ class NewsSubDetailsState extends State<NewsSubDetails> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     // allRowBtn(),
-
-                    allRowBtn(),
-                    Divider(
-                      thickness: 0.5,
-                      color: Colors.grey,
-                    ),
+                    widget.isDetails!
+                        ? widget.model!.categoryName == 'Video'
+                            ? allRowBtn()
+                            : Container()
+                        : allRowBtn(),
+                    // Divider(
+                    //   thickness: 0.5,
+                    //   color: Colors.grey,
+                    // ),
                     titleView(),
                     widget.isDetails! ? dateView() : Container(),
                     widget.isDetails!
